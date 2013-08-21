@@ -3,15 +3,18 @@
   , "description": "promise-based DynamoDB client"
   , "version": "0.3.0"
   , "homepage": "https://github.com/Obvious/dynamite"
-  , "authors": [
-      "Jeremy Stanley <jeremy@obvious.com> (https://github.com/azulus)"
-    , "Jean Hsu <jean@obvious.com> (https://github.com/jyhsu)"
-    , "Jonathan Fuchs <jon@medium.com> (https://github.com/jfuchs)"
-    , "Artem Titoulenko <artem@medium.com> (https://github.com/ArtemTitoulenko)"
-  ]
-  , "contributors": [
-
+  , "licenses" : [
+      { "type": "Apache License, Version 2.0"
+      , "url": "https://github.com/Obvious/dynamite/blob/master/LICENSE"
+      }
     ]
+  , "authors": [
+      "Jeremy Stanley <github@azulus.com> (https://github.com/azulus)"
+    , "Jean Hsu <jean@medium.com> (https://github.com/jyhsu)"
+    , "Jonathan Fuchs <jon@medium.com> (https://github.com/jfuchs)"
+    , "Artem Titoulenko <artem.titoulenko@gmail.com> (https://github.com/ArtemTitoulenko)"
+    , "Xiao Ma <xiao@medium.com> (https://github.com/x-ma)"
+  ]
   , "keywords": ["dynamite", "dynamo", "dynamodb"]
   , "main": "dynamite.js"
   , "repository": {
