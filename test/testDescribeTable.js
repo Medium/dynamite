@@ -1,0 +1,36 @@
+// Copyright 2013 The Obvious Corporation.
+
+var utils = require('./utils/testUtils.js')
+var dynamite = require('../dynamite')
+var nodeunitq = require('nodeunitq')
+var builder = new nodeunitq.Builder(exports)
+
+var onError = console.error.bind(console)
+var initialData = [{"userId": "userA", "column": "@", "age": "29"}]
+
+// basic setup for the tests, creating record userA with range key @
+exports.setUp = function (done) {
+  this.db = utils.getMockDatabase()
+  this.client = utils.getMockDatabaseClient()
+  utils.createTable(this.db, "user", "userId", "column")
+    .fail(onError)
+    .fin(done)
+}
+
+exports.tearDown = function (done) {
+  utils.deleteTable(this.db, "user")
+    .then(function () {
+      done()
+    })
+}
+
+// check that an item exists
+builder.add(function testSimpleDescribeTable(test) {
+  return this.client.describeTable("user")
+    .execute()
+    .then(function (data) {
+      test.equal(data.Table.TableName, "user", "Table name should be 'user'")
+      test.equal(data.Table.KeySchema[0].AttributeName, "userId", "Hash key name should be 'userId'")
+      test.equal(data.Table.KeySchema[1].AttributeName, "column", "Hash key name should be 'column'")
+    })
+})
