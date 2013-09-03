@@ -6,7 +6,12 @@ var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
 var onError = console.error.bind(console)
-var initialData = [{"userId": "userA", "column": "@", "age": "29"}]
+var initialData = [{
+  "userId": "userA",
+  "column": "@",
+  "age": "29",
+  "someStringSet": ['a', 'b', 'c']
+}]
 
 // basic setup for the tests, creating record userA with range key @
 exports.setUp = function (done) {
@@ -140,15 +145,36 @@ builder.add(function testDeleteAttributeExisting(test) {
     .enableUpsert()
     .deleteAttribute('age')
     .deleteAttribute('height')
+    .deleteFromAttribute('someStringSet', ['b', 'c', 'd'])
     .execute()
     .then(function (data) {
       test.equal(data.result.age, undefined, 'result age should be undefined')
       test.equal(data.result.height, undefined, 'height should be undefined')
+      test.deepEqual(data.result.someStringSet, ['a'], 'someStringSet should contain "a"')
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
       test.equal(data['Item']['age'], undefined, 'result age should be undefined')
       test.equal(data['Item']['height'], undefined, 'height should be undefined')
+      test.deepEqual(data['Item']['someStringSet'].SS, ['a'], 'someStringSet should contain only "a"')
+    })
+})
+
+builder.add(function testDeleteAllItemsFromStringSet(test) {
+  var self = this
+
+  return this.client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .enableUpsert()
+    .deleteFromAttribute('someStringSet', ['a', 'b', 'c', 'd'])
+    .execute()
+    .then(function (data) {
+      test.deepEqual(data.result.someStringSet, undefined, 'someStringSet should be undefined')
+      return utils.getItemWithSDK(self.db, "userA", "@")
+    })
+    .then(function (data) {
+      test.deepEqual(data['Item']['someStringSet'], undefined, 'someStringSet should be undefined')
     })
 })
 
@@ -175,7 +201,7 @@ builder.add(function testDeleteAttributeNonExisting(test) {
       //   result: {} }
       // so the original testing code is:
       // test.deepEqual(data.result, {}, 'result should be undefined')
-      test.deepEqual(data.result, {userId: 'userA', column: '@'}, 'fields should be updated')
+      test.deepEqual(data.result, {userId: 'userA', column: '@', someStringSet: ['a', 'b', 'c']}, 'fields should be updated')
       return utils.getItemWithSDK(self.db, "userB", "@")
     })
     .then(function (data) {
