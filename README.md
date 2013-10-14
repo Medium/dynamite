@@ -324,11 +324,11 @@ Demand that items be returned in ascending ASCII or numerical value. This is the
 
 Demand that items be returned in descending ASCII or numerical value.
 
-#### startKey(key)
+#### setStartKey(key)
 
 Start the query at a specified hash key. Useful when your request is returned in chunks and subsequent chunks need to be retrieved after the current batch is processed.
 
-When partial results are returned, the `LastEvaluatedKey` can be passed in as an argument to `startKey()` on the next query to get the next section of results.
+When partial results are returned, the `LastEvaluatedKey` can be passed in as an argument to `setStartKey()` on the next query to get the next section of results.
 
 #### setLimit(max)
 
@@ -394,7 +394,7 @@ A simple scan looks like this:
             // data.result contains all of the users
         })
 
-If your dataset contains more than 1 MB of data, the `data` that is returned will contain a `LastEvaluatedKey` key that will tell you what the last evaluated key for the scan was, so you can start the next `scan` there by passing the `LastEvaluatedKey` to `startKey(key)`.
+If your dataset contains more than 1 MB of data, the `data` that is returned will contain a `LastEvaluatedKey` key that will tell you what the last evaluated key for the scan was, so you can start the next `scan` there by passing the `LastEvaluatedKey` to `setStartKey(key)`.
 
 #### .filterAttributeEquals(field, value)
 
