@@ -165,7 +165,7 @@ builder.add(function testCursorForward(test) {
       return client.newQueryBuilder('comments')
         .setHashKey('postId', 'post1')
         .indexBetween('column', '/comment/', '/comment/timestamp/999999')
-        .startKey(data.LastEvaluatedKey)
+        .setStartKey(data.LastEvaluatedKey)
         .execute()
     })
     .then(function (data) {
@@ -189,7 +189,7 @@ builder.add(function testCursorBackward(test) {
         .setHashKey('postId', 'post1')
         .indexBetween('column', '/comment/', '/comment/timestamp/999999')
         .scanBackward()
-        .startKey(data.LastEvaluatedKey)
+        .setStartKey(data.LastEvaluatedKey)
         .execute()
     })
     .then(function (data) {
