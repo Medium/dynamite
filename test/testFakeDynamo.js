@@ -4,14 +4,16 @@ var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var Client = require('../lib/Client')
 var FakeDynamo = require('../lib/FakeDynamo')
+var typeUtil = require('../lib/TypeUtil')
+
 var utils = require('./utils/testUtils.js')
 
 var onError = console.error.bind(console)
 var userA = {'userId': 'userA', 'column': '@', 'age': '29'}
 
-var client
+var db, client
 exports.setUp = function (done) {
-  var db = new FakeDynamo()
+  db = new FakeDynamo()
   client = new Client({dbClient: db})
 
   var table = db.createTable('user')
@@ -88,4 +90,66 @@ builder.add(function testConditionalBuilderMethods(test) {
   test.deepEqual(expected, actual)
 
   test.done()
+})
+
+builder.add(function testScan(test) {
+  db.getTable('user').setData({
+    'userA': {
+        '1': {userId: 'userA', column: '1', age: '27'},
+        '2': {userId: 'userA', column: '2', age: '28'},
+        '3': {userId: 'userA', column: '3', age: '29'},
+    },
+    'userB': {
+        '1': {userId: 'userB', column: '1', age: '29'},
+    }
+  })
+  return client.newScanBuilder('user')
+      .execute()
+      .then(function (data) {
+        var result = data.result
+        test.deepEqual(result[0], {userId: 'userA', column: '1', age: '27'})
+        test.deepEqual(result[1], {userId: 'userA', column: '2', age: '28'})
+        test.deepEqual(result[2], {userId: 'userA', column: '3', age: '29'})
+        test.deepEqual(result[3], {userId: 'userB', column: '1', age: '29'})
+      })
+})
+
+builder.add(function testScanWithLimit(test) {
+  db.getTable('user').setData({
+    'userA': {
+        '1': {userId: 'userA', column: '1', age: '27'},
+        '2': {userId: 'userA', column: '2', age: '28'},
+        '3': {userId: 'userA', column: '3', age: '29'},
+    }
+  })
+  return client.newScanBuilder('user')
+      .setLimit(2)
+      .execute()
+      .then(function (data) {
+        var result = data.result
+        test.deepEqual(result[0], {userId: 'userA', column: '1', age: '27'})
+        test.deepEqual(result[1], {userId: 'userA', column: '2', age: '28'})
+        test.deepEqual(data.LastEvaluatedKey, typeUtil.packObjects({userId: 'userA', column: '2'}))
+      })
+})
+
+builder.add(function testScanWithStartKey(test) {
+  db.getTable('user').setData({
+    'userA': {
+        '1': {userId: 'userA', column: '1', age: '27'},
+        '2': {userId: 'userA', column: '2', age: '28'},
+        '3': {userId: 'userA', column: '3', age: '29'},
+    },
+    'userB': {
+        '1': {userId: 'userB', column: '1', age: '29'},
+    }
+  })
+  return client.newScanBuilder('user')
+      .setStartKey(typeUtil.packObjects({userId: 'userA', column: '2'}))
+      .execute()
+      .then(function (data) {
+        var result = data.result
+        test.deepEqual(result[0], {userId: 'userA', column: '3', age: '29'})
+        test.deepEqual(result[1], {userId: 'userB', column: '1', age: '29'})
+      })
 })
