@@ -1,36 +1,40 @@
 {
-    "name": "dynamite"
-  , "description": "promise-based DynamoDB client"
-  , "version": "0.3.1"
-  , "homepage": "https://github.com/Obvious/dynamite"
-  , "licenses" : [
-      { "type": "Apache License, Version 2.0"
-      , "url": "https://github.com/Obvious/dynamite/blob/master/LICENSE"
-      }
-    ]
-  , "authors": [
-      "Jeremy Stanley <github@azulus.com> (https://github.com/azulus)"
-    , "Jean Hsu <jean@medium.com> (https://github.com/jyhsu)"
-    , "Jonathan Fuchs <jon@medium.com> (https://github.com/jfuchs)"
-    , "Artem Titoulenko <artem.titoulenko@gmail.com> (https://github.com/ArtemTitoulenko)"
-    , "Xiao Ma <xiao@medium.com> (https://github.com/x-ma)"
-  ]
-  , "keywords": ["dynamite", "dynamo", "dynamodb"]
-  , "main": "dynamite.js"
-  , "repository": {
-      "type": "git"
-    , "url": "https://github.com/Obvious/dynamite.git"
-  }
-  , "dependencies": {
+  "name": "dynamite",
+  "description": "promise-based DynamoDB client",
+  "version": "0.3.2",
+  "homepage": "https://github.com/Obvious/dynamite",
+  "licenses" : [
+    { "type": "Apache License, Version 2.0",
+      "url": "https://github.com/Obvious/dynamite/blob/master/LICENSE"
+    }
+  ],
+  "authors": [
+    "Jeremy Stanley <github@azulus.com> (https://github.com/azulus)",
+    "Jean Hsu <jean@medium.com> (https://github.com/jyhsu)",
+    "Jonathan Fuchs <jon@medium.com> (https://github.com/jfuchs)",
+    "Artem Titoulenko <artem.titoulenko@gmail.com> (https://github.com/ArtemTitoulenko)",
+    "Xiao Ma <xiao@medium.com> (https://github.com/x-ma)"
+  ],
+  "keywords": [
+    "dynamite",
+    "dynamo",
+    "dynamodb"
+  ],
+  "main": "dynamite.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Obvious/dynamite.git"
+  },
+  "dependencies": {
     "kew": "0.1.7",
     "typ": "0.6.2",
     "aws-sdk": "1.0.0"
-  }
-  , "devDependencies": {
-      "nodeunit": "0.7.4",
-      "nodeunitq": "0.0.3"
-  }
-  , "scripts": {
+  },
+  "devDependencies": {
+    "nodeunit": "0.7.4",
+    "nodeunitq": "0.0.3"
+  },
+  "scripts": {
     "test": "./node_modules/.bin/nodeunit test"
   }
 }
