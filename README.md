@@ -178,7 +178,7 @@ primary keys, in the form `{hashKey: 123, rangeKey: 456}`.
 
 Items are handled as JavaScript Objects by the client. These are then converted into an AWS specific format and sent off. The only accepted types of data that can be stored in DynamoDB are Strings, Numbers, and Sets (Arrays). Sets can contain either only Numbers or Strings.
 
-	client.PutItem('user-table', {
+	client.putItem('user-table', {
 		userId: 'userA'
 	  , column: '@'
 	  , age: 30
@@ -193,7 +193,7 @@ If an item with the same hash and range keys as the one that is being inserted, 
 
     // initialData = [{userId: 'userA', column: '@', age: 27]
 
-    client.PutItem('user-table', {
+    client.putItem('user-table', {
 		userId: 'userA'
 	  , column: '@'
 	  , height: 72
