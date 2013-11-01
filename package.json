@@ -1,7 +1,7 @@
 {
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "homepage": "https://github.com/Obvious/dynamite",
   "licenses" : [
     { "type": "Apache License, Version 2.0",
