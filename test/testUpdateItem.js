@@ -170,11 +170,11 @@ builder.add(function testDeleteAllItemsFromStringSet(test) {
     .deleteFromAttribute('someStringSet', ['a', 'b', 'c', 'd'])
     .execute()
     .then(function (data) {
-      test.deepEqual(data.result.someStringSet, undefined, 'someStringSet should be undefined')
+      test.deepEqual(data.result.someStringSet.length, 0, 'someStringSet length should be 0')
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
-      test.deepEqual(data['Item']['someStringSet'], undefined, 'someStringSet should be undefined')
+      test.deepEqual(data['Item']['someStringSet'].SS.length, 0, 'someStringSet length should be 0')
     })
 })
 
