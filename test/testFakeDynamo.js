@@ -204,3 +204,34 @@ builder.add(function testQueryOnSecondaryIndexEquals(test) {
       test.equal(data.result.length, 1, '"1" should be returned')
     })
 })
+
+// test querying secondary index that have repeated column values
+// this is a test for a regression where fake dynamo may reinsert values
+// when the keys match again
+builder.add(function testQueryOnMultipleIndexes(test) {
+  db.getTable('user').setData({
+    'userA': {
+        '1': {userId: 'userA', column: '1', age: '27'},
+        '2': {userId: 'userA', column: '2', age: '28'},
+        '3': {userId: 'userA', column: '3', age: '29'},
+        '4': {userId: 'userA', column: '4', age: '30'},
+        '5': {userId: 'userA', column: '5', age: '30'},
+    },
+    'userB': {
+        '1': {userId: 'userB', column: '1', age: '29'},
+    }
+  })
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 28)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result[0].age, 28, "Age should match 28")
+      test.equal(data.result[1].age, 29, "Age should match 29")
+      test.equal(data.result[2].age, 30, "Age should match 30")
+      test.equal(data.result[3].age, 30, "Age should match 30")
+      test.equal(data.result.length, 4, '"4" should be returned')
+    })
+})
