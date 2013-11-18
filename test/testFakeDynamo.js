@@ -235,3 +235,27 @@ builder.add(function testQueryOnMultipleIndexes(test) {
       test.equal(data.result.length, 4, '"4" should be returned')
     })
 })
+
+builder.add(function testQueryWithLimit(test) {
+  db.getTable('user').setData({
+    'userA': {
+        '1': {userId: 'userA', column: '1', age: '27'},
+        '2': {userId: 'userA', column: '2', age: '28'},
+        '3': {userId: 'userA', column: '3', age: '29'},
+        '4': {userId: 'userA', column: '4', age: '30'}
+    }
+  })
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 28)
+    .setLimit(2)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result[0].age, 28, "Age should match 28")
+      test.equal(data.result[1].age, 29, "Age should match 29")
+      test.equal(data.result.length, 2, '"4" should be returned')
+      test.deepEqual(data.LastEvaluatedKey, {userId: {S: 'userA'}, column: {S: '3'}})
+    })
+})
