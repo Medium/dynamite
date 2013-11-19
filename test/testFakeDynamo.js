@@ -257,6 +257,17 @@ builder.add(function testQueryWithLimit(test) {
       test.equal(data.result[1].age, 29)
       test.equal(data.result.length, 2)
       test.deepEqual(data.LastEvaluatedKey, {userId: {S: 'userA'}, column: {S: '3'}})
+
+      return client.newQueryBuilder('user')
+        .setStartKey(data.LastEvaluatedKey)
+        .setHashKey('userId', 'userA')
+        .setIndexName('age-index')
+        .indexGreaterThanEqual('age', 28)
+        .execute()
+    })
+    .then(function (data) {
+      test.equal(data.result[0].age, 30)
+      test.equal(data.result.length, 1)
     })
 })
 
