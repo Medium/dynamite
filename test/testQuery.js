@@ -268,3 +268,27 @@ builder.add(function testCountIfZero(test) {
       test.equal(data.Count, 0, '"0" should be returned')
     })
 })
+
+builder.add(function testNext(test) {
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBetween('column', '/comment/', '/comment/timestamp/999999')
+    .setLimit(3)
+    .execute()
+    .then(function (data) {
+      test.equal(3, data.Count)
+      test.ok(data.hasNext())
+      return data.next()
+    })
+    .then(function (data) {
+      test.equal(1, data.Count)
+      test.ok(!data.hasNext())
+      return data.next()
+    })
+    .then(function (data) {
+      test.fail('Expected error')
+    })
+    .fail(function (e) {
+      if (e.message !== 'No more results') throw e
+    })
+})
