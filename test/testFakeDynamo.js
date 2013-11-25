@@ -128,7 +128,7 @@ builder.add(function testScanWithLimit(test) {
         var result = data.result
         test.deepEqual(result[0], {userId: 'userA', column: '1', age: '27'})
         test.deepEqual(result[1], {userId: 'userA', column: '2', age: '28'})
-        test.deepEqual(data.LastEvaluatedKey, typeUtil.packObjects({userId: 'userA', column: '2'}))
+        test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '2'})
       })
 })
 
@@ -144,7 +144,7 @@ builder.add(function testScanWithStartKey(test) {
     }
   })
   return client.newScanBuilder('user')
-      .setStartKey(typeUtil.packObjects({userId: 'userA', column: '2'}))
+      .setStartKey({userId: 'userA', column: '2'})
       .execute()
       .then(function (data) {
         var result = data.result
@@ -255,7 +255,7 @@ builder.add(function testQueryWithLimit(test) {
       test.equal(data.result[0].age, 28)
       test.equal(data.result[1].age, 29)
       test.equal(data.result.length, 2)
-      test.deepEqual(data.LastEvaluatedKey, {userId: {S: 'userA'}, column: {S: '3'}})
+      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '3'})
 
       return client.newQueryBuilder('user')
         .setStartKey(data.LastEvaluatedKey)
@@ -290,6 +290,6 @@ builder.add(function testQueryWithMaxResultSize(test) {
     .then(function (data) {
       test.equal(data.result[0].age, 28)
       test.equal(data.result.length, 1)
-      test.deepEqual(data.LastEvaluatedKey, {userId: {S: 'userA'}, column: {S: '2'}})
+      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '2'})
     })
 })
