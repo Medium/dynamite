@@ -160,3 +160,26 @@ builder.add(function testFilterByIn(test) {
                .filterAttributeIn("post", [2, 3])
   return scanAndCheck(scan, [0, 3, 4], test, "testFilterByIn")
 })
+
+builder.add(function testNext(test) {
+  return this.client.newScanBuilder(tableName)
+    .filterAttributeGreaterThan("post", 2)
+    .setLimit(3)
+    .execute()
+    .then(function (data) {
+      test.equal(3, data.Count)
+      test.ok(data.hasNext())
+      return data.next()
+    })
+    .then(function (data) {
+      test.equal(1, data.Count)
+      test.ok(!data.hasNext())
+      return data.next()
+    })
+    .then(function (data) {
+      test.fail('Expected error')
+    })
+    .fail(function (e) {
+      if (e.message !== 'No more results') throw e
+    })
+})
