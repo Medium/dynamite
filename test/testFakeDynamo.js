@@ -128,7 +128,7 @@ builder.add(function testScanWithLimit(test) {
         var result = data.result
         test.deepEqual(result[0], {userId: 'userA', column: '1', age: '27'})
         test.deepEqual(result[1], {userId: 'userA', column: '2', age: '28'})
-        test.deepEqual(data.LastEvaluatedKey, typeUtil.packObjects({userId: 'userA', column: '2'}))
+        test.deepEqual(data.LastEvaluatedKey, typeUtil.packObjectOrArray({userId: 'userA', column: '2'}))
       })
 })
 
@@ -144,7 +144,7 @@ builder.add(function testScanWithStartKey(test) {
     }
   })
   return client.newScanBuilder('user')
-      .setStartKey(typeUtil.packObjects({userId: 'userA', column: '2'}))
+      .setStartKey(typeUtil.packObjectOrArray({userId: 'userA', column: '2'}))
       .execute()
       .then(function (data) {
         var result = data.result
