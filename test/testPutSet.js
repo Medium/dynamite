@@ -1,5 +1,6 @@
 var utils = require('./utils/testUtils.js')
 var dynamite = require('../dynamite')
+var errors = require('../lib/errors')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
@@ -202,9 +203,7 @@ builder.add(function testStringSetPutWithFailedConditional(test) {
   .then(function (data) {
     test.fail("'testStringSetPutWithFailedConditional' failed")
   })
-  .fail(function (e) {
-    test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-  })
+  .fail(this.client.throwUnlessConditionalError)
 })
 
 // put set with failed conditional doesn't exist
@@ -227,9 +226,7 @@ builder.add(function testStringSetPutWithFailedConditionalForNoRecord(test) {
   .then(function (data) {
     test.fail("'testStringSetPutWithFailedConditionalForNoRecord' failed")
   })
-  .fail(function (e) {
-    test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-  })
+  .fail(this.client.throwUnlessConditionalError)
 })
 
 // put set with failed absent conditional exists
@@ -252,7 +249,5 @@ builder.add(function testStringSetPutWithFailedConditionalExists(test) {
   .then(function (data) {
     test.fail("'testStringSetPutWithFailedConditionalForNoRecord' failed")
   })
-  .fail(function (e) {
-    test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-  })
+  .fail(this.client.throwUnlessConditionalError)
 })

@@ -4,6 +4,7 @@ var utils = require('./utils/testUtils.js')
 var dynamite = require('../dynamite')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
+var errors = require('../lib/errors')
 
 var onError = console.error.bind(console)
 var initialData = [{"userId": "userA", "column": "@", "age": "29"}]
@@ -147,9 +148,7 @@ builder.add(function testPutWithFailedConditional(test) {
   .then(function () {
     test.fail("'testPutWithFailedConditional' failed")
   })
-  .fail(function (e) {
-    test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-  })
+  .fail(this.client.throwUnlessConditionalError)
 })
 
 // put with failed conditional doesn't exist
@@ -169,9 +168,7 @@ builder.add(function testPutWithFailedConditionalForNoRecord(test) {
   .then(function () {
     test.fail("'testPutWithFailedConditionalForNoRecord' failed")
   })
-  .fail(function (e) {
-    test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-  })
+  .fail(this.client.throwUnlessConditionalError)
 })
 
 // put set with failed absent conditional exists
@@ -191,7 +188,5 @@ builder.add(function testPutWithFailedAbsentConditionalExists(test) {
   .then(function () {
     test.fail("'testPutWithFailedAbsentConditionalExists' failed")
   })
-  .fail(function (e) {
-    test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-  })
+  .fail(this.client.throwUnlessConditionalError)
 })

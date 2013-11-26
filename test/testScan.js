@@ -8,9 +8,9 @@ var builder = new nodeunitq.Builder(exports)
 
 var onError = console.error.bind(console)
 var tableName = "user"
-var rawData = [{"userId": "c", "column": "@", "post": "3", "email": "1@medium.com"},
+var rawData = [{"userId": "a", "column": "@", "post": "3", "email": "1@medium.com"},
                {"userId": "b", "column": "@", "post": "0", "address": "800 Market St. SF, CA"},
-               {"userId": "a", "column": "@", "post": "5", "email": "3@medium"},
+               {"userId": "c", "column": "@", "post": "5", "email": "3@medium"},
                {"userId": "d", "column": "@", "post": "2", "twitter": "haha"},
                {"userId": "e", "column": "@", "post": "2", "twitter": "hoho"},
                {"userId": "f", "column": "@", "post": "4", "description": "Designer", "email": "h@w.com"},
@@ -48,8 +48,9 @@ var scanAndCheck = function (scan, expect, test) {
   return scan.execute()
     .then(function (data) {
       test.equal(data.result.length, expect.length, expect.length + " records should be returned")
+      data.result.sort(function(a, b) {return (a.userId < b.userId) ? -1 : ((a.userId > b.userId) ? 1 : 0)})
       for (var i = 0; i < data.result.length; i++) {
-        test.deepEqual(data.result[i], rawData[expect[i]], "Row should be retrieved in the correct order")
+        test.deepEqual(data.result[i], rawData[expect[i]], "Some records are wrong")
       }
     })
 }
@@ -57,7 +58,7 @@ var scanAndCheck = function (scan, expect, test) {
 // test basic scan on the entire table
 builder.add(function testScanAll(test) {
   var scan = this.client.newScanBuilder(tableName)
-  return scanAndCheck(scan, [2, 1, 0, 3, 4, 5, 6], test)
+  return scanAndCheck(scan, [0, 1, 2, 3, 4, 5, 6], test)
 })
 
 // test filtering with post == 2
@@ -71,7 +72,7 @@ builder.add(function testFilterByEqual(test) {
 builder.add(function testFilterByNotEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
                .filterAttributeNotEquals("post", 2)
-  return scanAndCheck(scan, [2, 1, 0, 5, 6], test)
+  return scanAndCheck(scan, [0, 1, 2, 5, 6], test)
 })
 
 // test filtering with post <= 2
@@ -92,31 +93,31 @@ builder.add(function testFilterByLessThan(test) {
 builder.add(function testFilterByGreaterThanEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
                .filterAttributeGreaterThanEqual("post", 2)
-  return scanAndCheck(scan, [2, 0, 3, 4, 5, 6], test)
+  return scanAndCheck(scan, [0, 2, 3, 4, 5, 6], test)
 })
 
 // test filtering with post > 2
 builder.add(function testFilterByGreaterThan(test) {
   var scan = this.client.newScanBuilder(tableName)
                .filterAttributeGreaterThan("post", 2)
-  return scanAndCheck(scan, [2, 0, 5, 6], test)
+  return scanAndCheck(scan, [0, 2, 5, 6], test)
 })
 
 // test filtering with not null
 builder.add(function testFilterByNotNull(test) {
   var scan = this.client.newScanBuilder(tableName)
                .filterAttributeNotNull("post")
-  return scanAndCheck(scan, [2, 1, 0, 3, 4, 5, 6], test)
+  return scanAndCheck(scan, [0, 1, 2, 3, 4, 5, 6], test)
   scan = this.client.newScanBuilder(tableName)
            .filterAttributeNotNull("email")
-  return scanAndCheck(scan, [2, 0, 5], test)
+  return scanAndCheck(scan, [0, 2, 5], test)
 })
 
 // test filtering with email 'CONTAINS' 'medium'
 builder.add(function testFilterByContains(test) {
   var scan = this.client.newScanBuilder(tableName)
                .filterAttributeContains("email", "medium")
-  return scanAndCheck(scan, [2, 0], test)
+  return scanAndCheck(scan, [0, 2], test)
 })
 
 // test filters with tags 'CONTAINS' 'foo'
@@ -162,17 +163,21 @@ builder.add(function testFilterByIn(test) {
 })
 
 builder.add(function testNext(test) {
+  var numInFirstScan = 0
   return this.client.newScanBuilder(tableName)
     .filterAttributeGreaterThan("post", 2)
-    .setLimit(3)
+    // The limit is *not* the number of records to return; instead it is
+    // the number of records to scan. So the actual number of records returned
+    // is not specified when a filter is given.
+    .setLimit(4)
     .execute()
     .then(function (data) {
-      test.equal(3, data.Count)
+      numInFirstScan = data.Count
       test.ok(data.hasNext())
       return data.next()
     })
     .then(function (data) {
-      test.equal(1, data.Count)
+      test.equal(4, numInFirstScan + data.Count, 'Scan should return 4 records in total')
       test.ok(!data.hasNext())
       return data.next()
     })

@@ -65,7 +65,7 @@ utils.createTable = function (db, tableName, hashKey, rangeKey) {
        KeySchema:
          {HashKeyElement: {AttributeName: hashKey, AttributeType: "S"},
           RangeKeyElement: {AttributeName: rangeKey, AttributeType: "S"}},
-       ProvisionedThroughput: {ReadCapacityUnits: 0, WriteCapacityUnits: 0}
+       ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
       },
       defer.makeNodeResolver()
     )
@@ -76,7 +76,7 @@ utils.createTable = function (db, tableName, hashKey, rangeKey) {
                               {AttributeName: rangeKey, AttributeType: "S"}],
        KeySchema: [{AttributeName: hashKey, KeyType: "HASH"},
                    {AttributeName: rangeKey, KeyType: "RANGE"}],
-       ProvisionedThroughput: {ReadCapacityUnits: 0, WriteCapacityUnits: 0}
+       ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
       },
       defer.makeNodeResolver()
     )
@@ -132,9 +132,7 @@ var convert = function (obj) {
 var putOneRecord = function(db, tableName, record) {
   var defer = Q.defer()
   db.putItem(
-    {TableName: tableName,
-     Item: convert(record)
-    },
+    {TableName: tableName, Item: convert(record)},
     defer.makeNodeResolver()
   )
   return defer.promise
@@ -148,17 +146,11 @@ var putOneRecord = function(db, tableName, record) {
  */
 utils.initTable = function (response, context) {
   var db = context.db
-  var p = null
-  var helper = function (i) {
-    return function (e) {
-      return putOneRecord(db, context.tableName, context.data[i])
-    };
+  var promises = []
+  for (var i = 0; i < context.data.length; i += 1) {
+    promises.push(putOneRecord(db, context.tableName, context.data[i]))
   }
-  p = putOneRecord(db, context.tableName, context.data[0]);
-  for (var i = 1; i < context.data.length; i += 1) {
-    p = p.then(helper(i))
-  }
-  return p
+  return Q.all(promises)
 }
 
 /*

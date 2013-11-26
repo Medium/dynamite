@@ -2,6 +2,7 @@
 
 var utils = require('./utils/testUtils.js')
 var dynamite = require('../dynamite')
+var errors = require('../lib/errors')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
@@ -74,7 +75,7 @@ builder.add(function testPutAttributeNonExisting(test) {
     })
 })
 
-//test putting attributes with empty and null values
+//test putting attributes with empty would succeed
 builder.add(function testPutAttributeEmpty(test) {
   var self = this
   return this.client.newUpdateBuilder('user')
@@ -301,9 +302,7 @@ builder.add(function testUpdateFailsWithConditional(test) {
     .then(function (data) {
       test.fail("'testUpdateFailsWithConditional' failed - the query is expected to fail, but it didn't.")
     })
-    .fail(function (e) {
-      test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-    })
+    .fail(this.client.throwUnlessConditionalError)
 })
 
 // test updating fails with conditional doesnt exist
@@ -323,9 +322,7 @@ builder.add(function testUpdateFailsWithConditionalDoesNotExist(test) {
     .then(function (data) {
       test.fail("'testUpdateFailsWithConditionalDoesNotExist' failed - the query is expected to fail, but it didn't.")
     })
-    .fail(function (e) {
-      test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-    })
+    .fail(this.client.throwUnlessConditionalError)
 })
 
 // test updating fails with absent conditional exists
@@ -345,9 +342,7 @@ builder.add(function testUpdateFailsWithAbsentConditional(test) {
     .then(function (data) {
       test.fail("'testUpdateFailsWithAbsentConditional' failed - the query is expected to fail, but it didn't.")
     })
-    .fail(function (e) {
-      test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-    })
+    .fail(this.client.throwUnlessConditionalError)
 })
 
 builder.add(function testUpdateFailsWhenConditionalArgumentBad(test) {
