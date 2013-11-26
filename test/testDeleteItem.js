@@ -3,6 +3,7 @@
 var utils = require('./utils/testUtils.js')
 var dynamite = require('../dynamite')
 var typ = require('typ')
+var errors = require('../lib/errors')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
@@ -113,9 +114,7 @@ builder.add(function testDeleteExistingItemWithFailedConditional(test) {
     .then(function () {
       test.fail("'testDeleteExistingItemWithFailedConditional' failed")
     })
-    .fail(function (e) {
-      test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-    })
+    .fail(this.client.throwUnlessConditionalError)
 })
 
 // check that an item fails an absent conditional when deleting
@@ -133,9 +132,7 @@ builder.add(function testDeleteExistingItemWithFailedAbsentConditional(test) {
     .then(function () {
       test.fail("'testDeleteExistingItemWithFailedAbsentConditional' failed")
     })
-    .fail(function (e) {
-      test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-    })
+    .fail(this.client.throwUnlessConditionalError)
 })
 
 // check that non-existent items can't be deleted if a conditional expects a value
@@ -153,9 +150,7 @@ builder.add(function testDeleteNonexistingItemWithConditional(test) {
     .then(function (e) {
       test.fail("'testDeleteNonexistingItemWithConditional' failed")
     })
-    .fail(function (e) {
-      test.equal(e.message.indexOf('conditional') !== -1, true, "Conditional request should fail")
-    })
+    .fail(this.client.throwUnlessConditionalError)
 })
 
 // check that non-existent items can't be deleted if a conditional expects a value

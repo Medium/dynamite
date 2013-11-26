@@ -30,12 +30,10 @@ for (var i = 0; i < 202; i++) {
 
 // Generate big items that will exceed amount allowed to be returned.
 var muchoData = []
-var junk = new Array(100000).join('.')
+var junk = new Array(62000).join('.')
 for (var i = 0; i < 101; i++) {
   muchoData.push({'hashKey': 'id' + i, 'column': '@', 'data': junk})
 }
-
-
 
 // basic setup for the tests, creating record userA with range key @
 exports.setUp = function (done) {
@@ -85,12 +83,8 @@ builder.add(function testBatchGet(test) {
     .requestItems('phones', [{'userId': 'userA', 'column': 'phone1'}, {'userId': 'userB', 'column': 'phone1'}])
     .execute()
     .then(function (data) {
-      test.equal(data.ConsumedCapacity.user, 1)
-      test.equal(data.ConsumedCapacity.phones, 1)
-
       var ages = data.result.user.map(function (user) { return user.age })
       test.deepEqual(ages, ['29', '44'])
-
       var phones = data.result.phones.map(function (phone) { return phone.number })
       test.deepEqual(phones, ['415-662-1234', '550-555-5555'])
     })
