@@ -306,7 +306,19 @@ Querying all items whose postId is `post1`:
             // data.result is an array of posts whose hash key is `post1`
         })
 
-There exist a variety of methods that refine and restrict the returned set of results that operate on the indexed range key, which in our sample case is `column`.
+The result of the query will be a DynamoResult object with a `result` property for the result set.
+
+DynamoResult also has two methods:
+
++ hasNext(): boolean
+
+Returns whether there are remaining results for this query.
+
++ next(): Promise.&lt;DynamoResult&gt;
+
+Executes a new query that fetches the next page of results.
+
+There are also a variety of methods that refine and restrict the returned set of results that operate on the indexed range key, which in our sample case is `column`.
 
 #### getCount()
 
@@ -329,6 +341,8 @@ Demand that items be returned in descending ASCII or numerical value.
 Start the query at a specified hash key. Useful when your request is returned in chunks and subsequent chunks need to be retrieved after the current batch is processed.
 
 When partial results are returned, the `LastEvaluatedKey` can be passed in as an argument to `setStartKey()` on the next query to get the next section of results.
+
+In general, calling setStartKey directly is discouraged in favor of using the `next()` method described above.
 
 #### setLimit(max)
 
