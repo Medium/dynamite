@@ -176,7 +176,7 @@ builder.add(function testQueryOnSecondaryIndexGreaterThan(test) {
       for (var i = 0; i < data.result.length; i++) {
         test.equal(data.result[i].age > 28, true, "Age should be greater than 28")
       }
-      test.equal(data.result.length, 2, '"2" should be returned')
+      test.equal(data.result.length, 2, '2 results should be returned')
     })
 })
 
@@ -200,7 +200,7 @@ builder.add(function testQueryOnSecondaryIndexEquals(test) {
     .execute()
     .then(function (data) {
       test.equal(data.result[0].age, 28, "Age should match 28")
-      test.equal(data.result.length, 1, '"1" should be returned')
+      test.equal(data.result.length, 1, '1 result should be returned')
     })
 })
 
@@ -231,7 +231,48 @@ builder.add(function testQueryOnMultipleIndexes(test) {
       test.equal(data.result[1].age, 29, "Age should match 29")
       test.equal(data.result[2].age, 30, "Age should match 30")
       test.equal(data.result[3].age, 30, "Age should match 30")
-      test.equal(data.result.length, 4, '"4" should be returned')
+      test.equal(data.result.length, 4, '4 results should be returned')
+    })
+})
+
+/**
+ * Basic test for Global Secondary Index support
+ * Does not currently support testing for existence of GSIs
+ */
+builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
+  // It is important in this test to set the hash key of the table
+  // That way we know that it is a GSI query
+  db.getTable('user').setHashKey("userId", "S")
+    .setData({
+    'userA': {
+        '1': {userId: 'userA', column: '1', age: '27', height: '160'},
+        '2': {userId: 'userA', column: '2', age: '28', height: '170'},
+        '3': {userId: 'userA', column: '3', age: '28', height: '180'},
+        '4': {userId: 'userA', column: '3', age: '29', height: '150'},
+    },
+    'userB': {
+        '1': {userId: 'userB', column: '1', age: '27', height: '200'},
+        '2': {userId: 'userB', column: '2', age: '28', height: '170'},
+        '3': {userId: 'userB', column: '3', age: '28', height: '180'},
+        '4': {userId: 'userB', column: '3', age: '29', height: '190'},
+    }
+  })
+
+  return client.newQueryBuilder('user')
+    .setHashKey('age', '28')
+    .setIndexName('age-height-gsi')
+    .indexGreaterThan('height', '175')
+    .execute()
+    .then(function (data) {
+      // results from userA
+      test.equal(data.result[0].age, 28, "Age should match 28")
+      test.equal(data.result[0].height, 180, "Height should match 180")
+
+      // results from userB
+      test.equal(data.result[1].age, 28, "Age should match 28")
+      test.equal(data.result[1].height, 180, "Height should match 180")
+
+      test.equal(data.result.length, 2, '2 results should be returned')
     })
 })
 
