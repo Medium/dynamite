@@ -1,7 +1,7 @@
 {
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "homepage": "https://github.com/Obvious/dynamite",
   "licenses" : [
     { "type": "Apache License, Version 2.0",
@@ -28,7 +28,7 @@
   "dependencies": {
     "kew": "0.3.3",
     "typ": "0.6.2",
-    "aws-sdk": "1.18.0"
+    "aws-sdk": "1.15.0"
   },
   "devDependencies": {
     "nodeunit": "0.7.4",
