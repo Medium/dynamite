@@ -26,15 +26,19 @@
     "url": "https://github.com/Obvious/dynamite.git"
   },
   "dependencies": {
-    "kew": "0.3.3",
+    "kew": "0.3.4",
     "typ": "0.6.2",
     "aws-sdk": "1.0.0"
   },
   "devDependencies": {
+    "closure-npc": "0.0.17",
     "nodeunit": "0.7.4",
     "nodeunitq": "0.0.3"
   },
+  "externDependencies": {
+    "aws-sdk": "./externs/aws-sdk.js"
+  },
   "scripts": {
-    "test": "./node_modules/.bin/nodeunit test"
+    "test": "./node_modules/.bin/nodeunit test && ./node_modules/.bin/closure-npc ."
   }
 }
