@@ -329,8 +329,46 @@ builder.add(function testQueryWithMaxResultSize(test) {
     .setLimit(2)
     .execute()
     .then(function (data) {
-      test.equal(data.result[0].age, 28, 'Age should match 28')
       test.equal(data.result.length, 1, '1 result should be returned')
+      test.equal(data.result[0].age, 28, 'Age should match 28')
       test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '2'})
+    })
+})
+
+builder.add(function testDescribeTable(test) {
+  return client.describeTable('user')
+    .execute()
+    .then(function (data) {
+      var tableDescription = data.Table
+      var attributes = tableDescription.AttributeDefinitions
+      var keySchema = tableDescription.KeySchema
+
+      test.ok(tableDescription, 'Table description should exist.')
+      test.equal(attributes.length, 2, 'Table should have 2 attributes in AttributeDefinitions (keys).')
+      test.equal(keySchema.length, 2, 'Table should have 2 attributes in KeySchema (keys).')
+      test.equal(tableDescription.TableName, 'user', 'Table name should be user.')
+      test.equal(tableDescription.TableStatus, 'ACTIVE', 'Table status should be active.')
+
+      // deep check attributes
+      for (var i = 0; i < attributes.length; i++) {
+        var attribute = attributes[i]
+        if (attribute.AttributeName == 'userId') {
+          test.deepEqual(attribute, {AttributeName: 'userId', AttributeType: 'S'})
+        } else if (attribute.AttributeName == 'column') {
+          test.deepEqual(attribute, {AttributeName: 'column', AttributeType: 'S'})
+        }
+      }
+
+      // deep check key schemas
+      for (var i = 0; i < keySchema.length; i++) {
+        var key = keySchema[i]
+        if (key.AttributeName == 'userId') {
+          test.deepEqual(key, {AttributeName: 'userId', KeyType: 'HASH'})
+        } else if (key.AttributeName == 'column') {
+          test.deepEqual(key, {AttributeName: 'column', KeyType: 'RANGE'})
+        }
+      }
+
+      test.expect(9) // make sure the tests in conditionals ran
     })
 })
