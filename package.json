@@ -2,10 +2,10 @@
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
   "version": "0.6.4",
-  "homepage": "https://github.com/Obvious/dynamite",
+  "homepage": "https://github.com/Medium/dynamite",
   "licenses" : [
     { "type": "Apache License, Version 2.0",
-      "url": "https://github.com/Obvious/dynamite/blob/master/LICENSE"
+      "url": "https://github.com/Medium/dynamite/blob/master/LICENSE"
     }
   ],
   "authors": [
@@ -23,7 +23,7 @@
   "main": "dynamite.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Obvious/dynamite.git"
+    "url": "https://github.com/Medium/dynamite.git"
   },
   "dependencies": {
     "kew": "0.4.0",
