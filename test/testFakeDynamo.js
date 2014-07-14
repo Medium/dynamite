@@ -372,3 +372,22 @@ builder.add(function testDescribeTable(test) {
       test.expect(9) // make sure the tests in conditionals ran
     })
 })
+
+builder.add(function testLongKey(test) {
+  // Create a string 2^10 chars long.
+  var str = '.'
+  for (var i = 0; i < 10; i++) {
+    str = str + str
+  }
+
+  return client.getItem('user')
+      .setHashKey('userId', 'userA')
+      .setRangeKey('column', str)
+      .execute()
+  .then(function () {
+    test.fail('Expected validation exception')
+  })
+  .fail(function (e) {
+    if (!client.isValidationError(e)) throw e
+  })
+})
