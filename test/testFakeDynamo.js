@@ -180,6 +180,64 @@ builder.add(function testQueryOnSecondaryIndexGreaterThan(test) {
     })
 })
 
+// test querying secondary index using less than condition
+builder.add(function testQueryOnSecondaryIndexLessThan(test) {
+  db.getTable('user').setData({
+    'userA': {
+        0: {userId: 'userA', column: 0, age: 27},
+        1: {userId: 'userA', column: 1, age: 26},
+        2: {userId: 'userA', column: 2, age: 28},
+        3: {userId: 'userA', column: 3, age: 30},
+        4: {userId: 'userA', column: 4, age: 29},
+    },
+    'userB': {
+        1: {userId: 'userB', column: '1', age: 29},
+    }
+  })
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexLessThan('age', 29)
+    .scanBackward()
+    .execute()
+    .then(function (data) {
+      test.equal(data.result[0].age, 28, 'First entry should be 28')
+      test.equal(data.result[1].age, 27, 'Second entry should be 27')
+      test.equal(data.result[2].age, 26, 'Third entry should be 26')
+      test.equal(data.result.length, 3, '3 results should be returned')
+    })
+})
+
+// test querying secondary index using less than equals condition
+builder.add(function testQueryOnSecondaryIndexLessThanEquals(test) {
+  db.getTable('user').setData({
+    'userA': {
+        0: {userId: 'userA', column: 0, age: 27},
+        1: {userId: 'userA', column: 1, age: 26},
+        2: {userId: 'userA', column: 2, age: 28},
+        3: {userId: 'userA', column: 3, age: 29},
+        4: {userId: 'userA', column: 4, age: 30},
+    },
+    'userB': {
+        1: {userId: 'userB', column: '1', age: 29},
+    }
+  })
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexLessThanEqual('age', 29)
+    .scanBackward()
+    .execute()
+    .then(function (data) {
+      test.equal(data.result[0].age, 29, 'First entry should be 29')
+      test.equal(data.result[1].age, 28, 'Second entry should be 28')
+      test.equal(data.result[2].age, 27, 'Third entry should be 27')
+      test.equal(data.result[3].age, 26, 'Fourth entry should be 26')
+      test.equal(data.result.length, 4, '4 results should be returned')
+    })
+})
+
+
 // test querying secondary index using equals condition
 builder.add(function testQueryOnSecondaryIndexEquals(test) {
   db.getTable('user').setData({
