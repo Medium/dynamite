@@ -160,8 +160,8 @@ builder.add(function testQueryOnSecondaryIndexGreaterThan(test) {
     'userA': {
         1: {userId: 'userA', column: 1, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
-        3: {userId: 'userA', column: 3, age: 29},
-        4: {userId: 'userA', column: 4, age: 30},
+        3: {userId: 'userA', column: 3, age: 3000},
+        4: {userId: 'userA', column: 4, age: 29},
     },
     'userB': {
         1: {userId: 'userB', column: '1', age: 29},
@@ -173,10 +173,9 @@ builder.add(function testQueryOnSecondaryIndexGreaterThan(test) {
     .indexGreaterThan('age', 28)
     .execute()
     .then(function (data) {
-      for (var i = 0; i < data.result.length; i++) {
-        test.equal(data.result[i].age > 28, true, 'Age should be greater than 28')
-      }
       test.equal(data.result.length, 2, '2 results should be returned')
+      test.equal(data.result[0].age, 29, 'First entry should be 29')
+      test.equal(data.result[1].age, 3000, 'Second entry should be 3000')
     })
 })
 
