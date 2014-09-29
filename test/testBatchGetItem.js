@@ -41,24 +41,16 @@ exports.setUp = function (done) {
   this.client = utils.getMockDatabaseClient()
 
   var userTablePromise = utils.createTable(this.db, 'user', 'userId', 'column')
-    .setContext({db: this.db, tableName: 'user', data: userData})
-    .then(utils.initTable)
-    .clearContext()
+    .thenBound(utils.initTable, null, {db: this.db, tableName: 'user', data: userData})
 
   var phoneTablePromise = utils.createTable(this.db, 'phones', 'userId', 'column')
-    .setContext({db: this.db, tableName: 'phones', data: phoneData})
-    .then(utils.initTable)
-    .clearContext()
+    .thenBound(utils.initTable, null, {db: this.db, tableName: 'phones', data: phoneData})
 
   var manyTablePromise = utils.createTable(this.db, 'pre_many', 'hashKey', 'column')
-    .setContext({db: this.db, tableName: 'pre_many', data: manyData})
-    .then(utils.initTable)
-    .clearContext()
+    .thenBound(utils.initTable, null, {db: this.db, tableName: 'pre_many', data: manyData})
 
   var muchoTablePromise = utils.createTable(this.db, 'mucho', 'hashKey', 'column')
-    .setContext({db: this.db, tableName: 'mucho', data: muchoData})
-    .then(utils.initTable)
-    .clearContext()
+    .thenBound(utils.initTable, null, {db: this.db, tableName: 'mucho', data: muchoData})
 
   Q.all([userTablePromise, phoneTablePromise, manyTablePromise, muchoTablePromise])
     .fail(onError)
