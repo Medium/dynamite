@@ -29,9 +29,7 @@ exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
   utils.createTable(this.db, tableName, "postId", "column")
-    .setContext({"db": this.db, "tableName": tableName, "data": rawData})
-    .then(utils.initTable)
-    .clearContext()
+    .thenBound(utils.initTable, null, {"db": this.db, "tableName": tableName, "data": rawData})
     .fail(onError)
     .fin(done)
 }
@@ -43,8 +41,8 @@ exports.tearDown = function (done) {
     })
 }
 
-function checkResults(total, offset) {
-  return function (data, test) {
+function checkResults(test, total, offset) {
+  return function (data) {
     test.equal(data.result.length, total, total + " records should be returned")
     for (var i = 0; i < data.result.length; i++) {
       test.deepEqual(data.result[i], sortedRawData[i + offset], "Row should be retrieved in the correct order")
@@ -57,8 +55,7 @@ builder.add(function testBasicQuery(test) {
   return this.client.newQueryBuilder('comments')
     .setHashKey('postId', 'post1')
     .execute()
-    .setContext(test)
-    .then(checkResults(6, 0))
+    .then(checkResults(test, 6, 0))
 })
 
 // test Index key begins with
@@ -67,8 +64,7 @@ builder.add(function testindexBeginsWith(test) {
     .setHashKey('postId', 'post1')
     .indexBeginsWith('column', '/comment/')
     .execute()
-    .setContext(test)
-    .then(checkResults(4, 1))
+    .then(checkResults(test, 4, 1))
 })
 
 // test Index key between
@@ -77,8 +73,7 @@ builder.add(function testIndexKeyBetween(test) {
     .setHashKey('postId', 'post1')
     .indexBetween('column', '/comment/', '/comment/timestamp/009999')
     .execute()
-    .setContext(test)
-    .then(checkResults(3, 1))
+    .then(checkResults(test, 3, 1))
 })
 
 // test Index key less than
@@ -87,8 +82,7 @@ builder.add(function testIndexKeyLessThan(test) {
     .setHashKey('postId', 'post1')
     .indexLessThan('column', '/comment/timestamp/001111')
     .execute()
-    .setContext(test)
-    .then(checkResults(1, 0))
+    .then(checkResults(test, 1, 0))
 })
 
 // test Index key less than equal
@@ -97,8 +91,7 @@ builder.add(function testIndexKeyLessThanEqual(test) {
     .setHashKey('postId', 'post1')
     .indexLessThanEqual('column', '/comment/timestamp/001111')
     .execute()
-    .setContext(test)
-    .then(checkResults(2, 0))
+    .then(checkResults(test, 2, 0))
 })
 
 // test Index key greater than
@@ -107,8 +100,7 @@ builder.add(function testIndexKeyGreaterThan(test) {
     .setHashKey('postId', 'post1')
     .indexGreaterThan('column', '/comment/timestamp/001111')
     .execute()
-    .setContext(test)
-    .then(checkResults(4, 2))
+    .then(checkResults(test, 4, 2))
 })
 
 // test Index key greater than equal
@@ -117,8 +109,7 @@ builder.add(function testIndexKeyGreaterThanEqual(test) {
     .setHashKey('postId', 'post1')
     .indexGreaterThanEqual('column', '/comment/timestamp/001111')
     .execute()
-    .setContext(test)
-    .then(checkResults(5, 1))
+    .then(checkResults(test, 5, 1))
 })
 
 // test Index key equal
@@ -127,8 +118,7 @@ builder.add(function testIndexKeyEqual(test) {
     .setHashKey('postId', 'post1')
     .indexEqual('column', '/comment/timestamp/001111')
     .execute()
-    .setContext(test)
-    .then(checkResults(1, 1))
+    .then(checkResults(test, 1, 1))
 })
 
 // test limit
@@ -138,8 +128,7 @@ builder.add(function testLimit(test) {
     .indexBetween('column', '/comment/', '/comment/timestamp/999999')
     .setLimit(3)
     .execute()
-    .setContext(test)
-    .then(checkResults(3, 1))
+    .then(checkResults(test, 3, 1))
 })
 
 // test scan forward
@@ -148,8 +137,7 @@ builder.add(function testScanForward(test) {
     .setHashKey('postId', 'post1')
     .indexBetween('column', '/comment/', '/comment/timestamp/999999')
     .execute()
-    .setContext(test)
-    .then(checkResults(4, 1))
+    .then(checkResults(test, 4, 1))
 })
 
 // test cursoring forward

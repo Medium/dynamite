@@ -144,7 +144,7 @@ var putOneRecord = function(db, tableName, record) {
  *
  * @return {Promise}
  */
-utils.initTable = function (response, context) {
+utils.initTable = function (context, response) {
   var db = context.db
   var promises = []
   for (var i = 0; i < context.data.length; i += 1) {

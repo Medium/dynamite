@@ -15,9 +15,7 @@ exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
   utils.createTable(this.db, "user", "userId", "column")
-    .setContext({db: this.db, tableName: "user", data: initialData})
-    .then(utils.initTable)
-    .clearContext()
+    .thenBound(utils.initTable, null, {db: this.db, tableName: "user", data: initialData})
     .fail(onError)
     .fin(done)
 }
