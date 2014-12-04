@@ -159,9 +159,9 @@ builder.add(function testScanWithStartKey(test) {
 builder.add(function testQueryOnSecondaryIndexGreaterThan(test) {
   db.getTable('user').setData({
     'userA': {
-        1: {userId: 'userA', column: 1, age: 27},
+        1: {userId: 'userA', column: 3, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
-        3: {userId: 'userA', column: 3, age: 3000},
+        3: {userId: 'userA', column: 5, age: 3000},
         4: {userId: 'userA', column: 4, age: 29},
     },
     'userB': {
@@ -185,9 +185,9 @@ builder.add(function testQueryOnSecondaryIndexLessThan(test) {
   db.getTable('user').setData({
     'userA': {
         0: {userId: 'userA', column: 0, age: 27},
-        1: {userId: 'userA', column: 1, age: 26},
+        1: {userId: 'userA', column: 3, age: 26},
         2: {userId: 'userA', column: 2, age: 28},
-        3: {userId: 'userA', column: 3, age: 30},
+        3: {userId: 'userA', column: 1, age: 30},
         4: {userId: 'userA', column: 4, age: 29},
     },
     'userB': {
@@ -213,9 +213,9 @@ builder.add(function testQueryOnSecondaryIndexLessThanEquals(test) {
   db.getTable('user').setData({
     'userA': {
         0: {userId: 'userA', column: 0, age: 27},
-        1: {userId: 'userA', column: 1, age: 26},
+        1: {userId: 'userA', column: 3, age: 26},
         2: {userId: 'userA', column: 2, age: 28},
-        3: {userId: 'userA', column: 3, age: 29},
+        3: {userId: 'userA', column: 1, age: 29},
         4: {userId: 'userA', column: 4, age: 30},
     },
     'userB': {
@@ -242,9 +242,9 @@ builder.add(function testQueryOnSecondaryIndexLessThanEquals(test) {
 builder.add(function testQueryOnSecondaryIndexEquals(test) {
   db.getTable('user').setData({
     'userA': {
-        1: {userId: 'userA', column: 1, age: 27},
+        1: {userId: 'userA', column: 3, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
-        3: {userId: 'userA', column: 3, age: 29},
+        3: {userId: 'userA', column: 1, age: 29},
         4: {userId: 'userA', column: 4, age: 30},
     },
     'userB': {
@@ -266,9 +266,9 @@ builder.add(function testQueryOnSecondaryIndexEquals(test) {
 builder.add(function testQueryOnGlobalSecondaryIndexEquals(test) {
   db.getTable('user').setData({
     'userA': {
-        1: {userId: 'userA', column: 1, age: 27},
+        1: {userId: 'userA', column: 3, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
-        3: {userId: 'userA', column: 3, age: 29},
+        3: {userId: 'userA', column: 1, age: 29},
         4: {userId: 'userA', column: 4, age: 30},
     },
     'userB': {
@@ -293,9 +293,9 @@ builder.add(function testQueryOnMultipleIndexes(test) {
   db.getTable('user').setData({
     'userA': {
         1: {userId: 'userA', column: '1', age: 27},
-        2: {userId: 'userA', column: '2', age: 28},
+        2: {userId: 'userA', column: '4', age: 28},
         3: {userId: 'userA', column: '3', age: 29},
-        4: {userId: 'userA', column: '4', age: 30},
+        4: {userId: 'userA', column: '2', age: 30},
         5: {userId: 'userA', column: '5', age: 30},
     },
     'userB': {
@@ -327,15 +327,15 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
   db.getTable('user').setHashKey('userId', 'S')
     .setData({
     'userA': {
-        1: {userId: 'userA', column: '1', age: 27, height: 160},
+        1: {userId: 'userA', column: '3', age: 27, height: 160},
         2: {userId: 'userA', column: '2', age: 28, height: 170},
-        3: {userId: 'userA', column: '3', age: 28, height: 180},
+        3: {userId: 'userA', column: '1', age: 28, height: 180},
         4: {userId: 'userA', column: '4', age: 29, height: 150},
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 27, height: 200},
+        1: {userId: 'userB', column: '3', age: 27, height: 200},
         2: {userId: 'userB', column: '2', age: 28, height: 170},
-        3: {userId: 'userB', column: '3', age: 28, height: 180},
+        3: {userId: 'userB', column: '1', age: 28, height: 180},
         4: {userId: 'userB', column: '4', age: 29, height: 190},
     }
   })
@@ -361,9 +361,9 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
 builder.add(function testQueryWithLimit(test) {
   db.getTable('user').setData({
     'userA': {
-        1: {userId: 'userA', column: '1', age: 27},
+        1: {userId: 'userA', column: '3', age: 27},
         2: {userId: 'userA', column: '2', age: 28},
-        3: {userId: 'userA', column: '3', age: 29},
+        3: {userId: 'userA', column: '1', age: 29},
         4: {userId: 'userA', column: '4', age: 30}
     }
   })
@@ -378,7 +378,7 @@ builder.add(function testQueryWithLimit(test) {
       test.equal(data.result[0].age, 28)
       test.equal(data.result[1].age, 29)
       test.equal(data.result.length, 2)
-      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '3'})
+      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '1'})
 
       return client.newQueryBuilder('user')
         .setStartKey(data.LastEvaluatedKey)
@@ -393,13 +393,50 @@ builder.add(function testQueryWithLimit(test) {
     })
 })
 
+builder.add(function testQueryWithLimitBackwards(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '3', age: 27},
+        2: {userId: 'userA', column: '2', age: 28},
+        3: {userId: 'userA', column: '1', age: 29},
+        4: {userId: 'userA', column: '4', age: 30}
+    }
+  })
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .scanBackward()
+    .indexLessThan('age', 30)
+    .setLimit(2)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.length, 2)
+      test.equal(data.result[0].age, 29)
+      test.equal(data.result[1].age, 28)
+      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '2'})
+
+      return client.newQueryBuilder('user')
+        .setStartKey(data.LastEvaluatedKey)
+        .setHashKey('userId', 'userA')
+        .setIndexName('age-index')
+        .indexLessThan('age', 30)
+        .scanBackward()
+        .execute()
+    })
+    .then(function (data) {
+      test.equal(data.result[0].age, 27)
+      test.equal(data.result.length, 1)
+    })
+})
+
 builder.add(function testQueryWithMaxResultSize(test) {
   db.getTable('user').setData({
     'userA': {
         1: {userId: 'userA', column: '1', age: 27},
-        2: {userId: 'userA', column: '2', age: 28},
+        2: {userId: 'userA', column: '4', age: 28},
         3: {userId: 'userA', column: '3', age: 29},
-        4: {userId: 'userA', column: '4', age: 30}
+        4: {userId: 'userA', column: '2', age: 30}
     }
   })
   db.getTable('user').setMaxResultSetSize(1)
@@ -413,7 +450,7 @@ builder.add(function testQueryWithMaxResultSize(test) {
     .then(function (data) {
       test.equal(data.result.length, 1, '1 result should be returned')
       test.equal(data.result[0].age, 28, 'Age should match 28')
-      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '2'})
+      test.deepEqual(data.LastEvaluatedKey, {userId: 'userA', column: '4'})
     })
 })
 
