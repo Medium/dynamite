@@ -37,6 +37,7 @@ builder.add(function testConditionalUpdateFails(test) {
     })
     .fail(function (e) {
       test.ok(client.isConditionalError(e))
+      test.ok(!!e.stack)
       throw e
     })
     .fail(client.throwUnlessConditionalError)
