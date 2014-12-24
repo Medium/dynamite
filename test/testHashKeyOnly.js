@@ -72,6 +72,28 @@ builder.add(function testStringSetPut(test) {
   })
 })
 
+// test putting an attribute for an existing record
+builder.add(function testPutAttributeExisting(test) {
+  var self = this
+
+  return this.client.newUpdateBuilder('userRangeOnly')
+    .setHashKey('userId', 'userA')
+    .enableUpsert()
+    .putAttribute('age', 30)
+    .putAttribute('height', 72)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.age, 30, 'result age should be 30')
+      test.equal(data.result.height, 72, 'height should be 72')
+      return utils.getItemWithSDK(self.db, "userA", null, 'userRangeOnly')
+    })
+    .then(function (data) {
+      test.equal(data['Item']['age'].N, "30", "result age should be 30")
+      test.equal(data['Item']['height'].N, "72", "height should be 72")
+    })
+})
+
+
 builder.add(function testDeleteItem(test) {
   //AWS.config.logger = process.stdout
 
