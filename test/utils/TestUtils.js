@@ -59,27 +59,45 @@ utils.deleteTable = function (db, tableName) {
  */
 utils.createTable = function (db, tableName, hashKey, rangeKey) {
   var defer = Q.defer()
+  var opts = {}
   if (apiVersion === AWSName.API_VERSION_2011) {
-    db.createTable(
-      {TableName: tableName,
-       KeySchema:
-         {HashKeyElement: {AttributeName: hashKey, AttributeType: "S"},
-          RangeKeyElement: {AttributeName: rangeKey, AttributeType: "S"}},
-       ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
+    opts =  {
+      TableName: tableName,
+      KeySchema: {
+        HashKeyElement: {AttributeName: hashKey, AttributeType: "S"}
       },
-      defer.makeNodeResolver()
-    )
+      ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
+    }
+
+    if (rangeKey) {
+      opts.KeySchema.RangeKeyElement = {AttributeName: rangeKey, AttributeType: "S"}
+    }
+
+    db.createTable(opts, defer.makeNodeResolver())
   } else if (apiVersion === AWSName.API_VERSION_2012) {
-    db.createTable(
-      {TableName: tableName,
-       AttributeDefinitions: [{AttributeName: hashKey, AttributeType: "S"},
-                              {AttributeName: rangeKey, AttributeType: "S"}],
-       KeySchema: [{AttributeName: hashKey, KeyType: "HASH"},
-                   {AttributeName: rangeKey, KeyType: "RANGE"}],
-       ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
-      },
-      defer.makeNodeResolver()
-    )
+    opts = {
+      TableName: tableName,
+      AttributeDefinitions: [
+        {AttributeName: hashKey, AttributeType: "S"}
+      ],
+      KeySchema: [
+        {AttributeName: hashKey, KeyType: "HASH"}
+      ],
+      ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
+    }
+
+    if (rangeKey) {
+      opts.AttributeDefinitions.push({
+        AttributeName: rangeKey,
+        AttributeType: "S"
+      })
+      opts.KeySchema.push({
+        AttributeName: rangeKey,
+        KeyType: "RANGE"
+      })
+    }
+
+    db.createTable(opts, defer.makeNodeResolver())
   } else {
     defer.reject(new Error('No api version found'))
   }
@@ -162,22 +180,42 @@ utils.initTable = function (context, response) {
  * @param hashKey {String}
  * @param rangeKey {String}
  */
-utils.getItemWithSDK = function (db, hashKey, rangeKey) {
+utils.getItemWithSDK = function (db, hashKey, rangeKey, table) {
   var defer = Q.defer()
+  var opts = {}
+
+  table = table || 'user'
+
   if (apiVersion === AWSName.API_VERSION_2011) {
+    opts = {
+      TableName: table,
+      Key: {
+        HashKeyElement: {"S": hashKey}
+      } 
+    }
+
+    if (rangeKey) {
+      Key.RangeKeyElement = {"S": rangeKey}
+    }
+
     db.getItem(
-      {TableName: "user",
-       Key: {HashKeyElement: {"S": hashKey},
-             RangeKeyElement: {"S": rangeKey}}
-      },
+      opts,
       defer.makeNodeResolver()
     )
   } else if (apiVersion === AWSName.API_VERSION_2012) {
+    opts = {
+      TableName: table,
+      Key: {
+        userId: {"S": hashKey}
+      }
+    }
+
+    if (rangeKey) {
+      opts.Key.column = {"S": rangeKey}
+    }
+
     db.getItem(
-      {TableName: "user",
-       Key: {userId: {"S": hashKey},
-             column: {"S": rangeKey}}
-      },
+      opts,
       defer.makeNodeResolver()
     )
   }
