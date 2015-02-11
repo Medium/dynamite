@@ -1,7 +1,7 @@
 {
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
-  "version": "0.6.9-alpha.1",
+  "version": "0.6.10",
   "homepage": "https://github.com/Medium/dynamite",
   "licenses" : [
     { "type": "Apache License, Version 2.0",
@@ -28,7 +28,7 @@
   "dependencies": {
     "kew": "0.5.0-alpha",
     "typ": "0.6.2",
-    "aws-sdk": "1.15.0"
+    "aws-sdk": "2.1.9"
   },
   "devDependencies": {
     "closure-npc": "0.1.3",
