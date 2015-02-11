@@ -16,9 +16,9 @@ Dynamo](https://github.com/ananthakumaran/fake_dynamo) Ruby gem. To install the 
 
 	$ gem install fake_dynamo
 
-To run the service, with an optional log level of `log` (show everything) on port 4567, run the following in a different terminal window or as a background process:
+To run the service, with an optional log level of `debug` (show everything) on port 4567, run the following in a different terminal window or as a background process:
 
-	$ fake_dynamo -l log -p 4567
+	$ fake_dynamo -l debug -p 4567
 
 Ensure that all of the required node modules are installed in the Dynamite directory by first running:
 
@@ -124,7 +124,7 @@ which you can detect with the `isConditionalError` method
           }
         })
 
-Catching all conditional errors is a common idiom, so there is a 
+Catching all conditional errors is a common idiom, so there is a
 `throwUnlessConditionalError` helper method for this case.
 
     client.fn('some-table')
