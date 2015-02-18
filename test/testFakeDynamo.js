@@ -322,8 +322,6 @@ builder.add(function testQueryOnMultipleIndexes(test) {
  * Does not currently support testing for existence of GSIs
  */
 builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
-  // It is important in this test to set the hash key of the table
-  // That way we know that it is a GSI query
   db.getTable('user').setHashKey('userId', 'S')
     .setData({
     'userA': {
@@ -335,22 +333,25 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
     'userB': {
         1: {userId: 'userB', column: '3', age: 27, height: 200},
         2: {userId: 'userB', column: '2', age: 28, height: 170},
-        3: {userId: 'userB', column: '1', age: 28, height: 180},
+        3: {userId: 'userB', column: '1', age: 28, height: 178},
         4: {userId: 'userB', column: '4', age: 29, height: 190},
     }
   })
 
   return client.newQueryBuilder('user')
     .setHashKey('age', 28)
+    // It is important that the index name has three or more terms (sepaprated by
+    // '-'), it's a DynamoDB index namng convention, and it is how we know that it
+    // is a GSI query
     .setIndexName('age-height-gsi')
     .indexGreaterThan('height', 175)
     .execute()
     .then(function (data) {
-      // results from userA
-      test.equal(data.result[0].age, 28, 'Age should match 28')
-      test.equal(data.result[0].height, 180, 'Height should match 180')
-
       // results from userB
+      test.equal(data.result[0].age, 28, 'Age should match 28')
+      test.equal(data.result[0].height, 178, 'Height should match 178')
+
+      // results from userA
       test.equal(data.result[1].age, 28, 'Age should match 28')
       test.equal(data.result[1].height, 180, 'Height should match 180')
 
