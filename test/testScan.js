@@ -59,6 +59,12 @@ builder.add(function testScanAll(test) {
   return scanAndCheck(scan, [0, 1, 2, 3, 4, 5, 6], test)
 })
 
+builder.add(function testScanSegment(test) {
+  var scan = this.client.newScanBuilder(tableName)
+               .setParallelScan(0, 2)
+  return scanAndCheck(scan, [0, 1, 2, 3], test)
+})
+
 // test filtering with post == 2
 builder.add(function testFilterByEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
