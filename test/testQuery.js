@@ -8,7 +8,7 @@ var builder = new nodeunitq.Builder(exports)
 
 var onError = console.error.bind(console)
 var tableName = "comments"
-var rawData = [{"postId": "post1", "column": "@", "title": "This is my post", "content": "And here is some content!", "tags": ['foo', 'bar']},
+var rawData = [{"postId": "post1", "column": "@", "title": "This is my post", "content": "And here is some content!", "tags": ['bar', 'foo']},
                {"postId": "post1", "column": "/comment/timestamp/002123", "comment": "this is slightly later"},
                {"postId": "post1", "column": "/comment/timestamp/010000", "comment": "where am I?"},
                {"postId": "post1", "column": "/comment/timestamp/001111", "comment": "HEYYOOOOO"},
@@ -65,6 +65,19 @@ builder.add(function testindexBeginsWith(test) {
     .indexBeginsWith('column', '/comment/')
     .execute()
     .then(checkResults(test, 4, 1))
+})
+
+// test filtering
+builder.add(function testFilterByComment(test) {
+  var filter = this.client.newFilterBuilder()
+    .filterAttributeBeginsWith("comment", "HEY")
+
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBeginsWith('column', '/comment/')
+    .withFilter(filter)
+    .execute()
+    .then(checkResults(test, 1, 1))
 })
 
 // test Index key between
@@ -211,7 +224,7 @@ builder.add(function testSetExistence(test) {
     .selectAttributes(['postId', 'tags'])
     .execute()
     .then(function (data) {
-      test.deepEqual(data.result[0].tags, ['foo', 'bar'], "post should have tags ['foo', 'bar']")
+      test.deepEqual(data.result[0].tags, ['bar', 'foo'], "post should have tags ['bar', 'foo']")
     })
 })
 
