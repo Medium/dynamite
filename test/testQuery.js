@@ -68,7 +68,7 @@ builder.add(function testindexBeginsWith(test) {
 
 // test filtering
 builder.add(function testFilterByComment(test) {
-  var filter = this.client.newFilterBuilder()
+  var filter = this.client.newConditionBuilder()
     .filterAttributeBeginsWith("comment", "HEY")
 
   return this.client.newQueryBuilder('comments')

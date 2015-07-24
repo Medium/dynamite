@@ -67,108 +67,108 @@ builder.add(function testScanSegment(test) {
 // test filtering with post == 2
 builder.add(function testFilterByEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeEquals("post", 2))
+               .withFilter(this.client.newConditionBuilder().filterAttributeEquals("post", 2))
   return scanAndCheck(scan, [3, 4], test)
 })
 
 // test filtering with post != 2
 builder.add(function testFilterByNotEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeNotEquals("post", 2))
+               .withFilter(this.client.newConditionBuilder().filterAttributeNotEquals("post", 2))
   return scanAndCheck(scan, [0, 1, 2, 5, 6], test)
 })
 
 // test filtering with post <= 2
 builder.add(function testFilterByLessThanEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeLessThanEqual("post", 2))
+               .withFilter(this.client.newConditionBuilder().filterAttributeLessThanEqual("post", 2))
   return scanAndCheck(scan, [1, 3, 4], test)
 })
 
 // test filtering with post < 2
 builder.add(function testFilterByLessThan(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeLessThan("post", 2))
+               .withFilter(this.client.newConditionBuilder().filterAttributeLessThan("post", 2))
   return scanAndCheck(scan, [1], test)
 })
 
 // test filtering with post >= 2
 builder.add(function testFilterByGreaterThanEqual(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeGreaterThanEqual("post", 2))
+               .withFilter(this.client.newConditionBuilder().filterAttributeGreaterThanEqual("post", 2))
   return scanAndCheck(scan, [0, 2, 3, 4, 5, 6], test)
 })
 
 // test filtering with post > 2
 builder.add(function testFilterByGreaterThan(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeGreaterThan("post", 2))
+               .withFilter(this.client.newConditionBuilder().filterAttributeGreaterThan("post", 2))
   return scanAndCheck(scan, [0, 2, 5, 6], test)
 })
 
 // test filtering with not null
 builder.add(function testFilterByNotNull(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeNotNull("post"))
+               .withFilter(this.client.newConditionBuilder().filterAttributeNotNull("post"))
   return scanAndCheck(scan, [0, 1, 2, 3, 4, 5, 6], test)
   scan = this.client.newScanBuilder(tableName)
-           .withFilter(this.client.newFilterBuilder().filterAttributeNotNull("email"))
+           .withFilter(this.client.newConditionBuilder().filterAttributeNotNull("email"))
   return scanAndCheck(scan, [0, 2, 5], test)
 })
 
 // test filtering with email 'CONTAINS' 'medium'
 builder.add(function testFilterByContains(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeContains("email", "medium"))
+               .withFilter(this.client.newConditionBuilder().filterAttributeContains("email", "medium"))
   return scanAndCheck(scan, [0, 2], test)
 })
 
 // test filters with tags 'CONTAINS' 'foo'
 builder.add(function testFilterBySetContains(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeContains("tags", "foo"))
+               .withFilter(this.client.newConditionBuilder().filterAttributeContains("tags", "foo"))
   return scanAndCheck(scan, [6], test)
 })
 
 // test filtering with email 'NOT_CONTAINS' 'medium'
 builder.add(function testFilterByNotContains(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeNotContains("email", "medium"))
+               .withFilter(this.client.newConditionBuilder().filterAttributeNotContains("email", "medium"))
   return scanAndCheck(scan, [5], test, "testFilterByNotContains")
 })
 
 // test filters with tags 'NOT_CONTAINS' 'baz'
 builder.add(function testFilterBySetNotContains(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeNotContains("tags", "baz"))
+               .withFilter(this.client.newConditionBuilder().filterAttributeNotContains("tags", "baz"))
   return scanAndCheck(scan, [6], test, "testFilterBySetNotContains")
 })
 
 // test filtering with twitter 'BEGIN_WITH' 'h'
 builder.add(function testFilterByBeginWith(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeBeginsWith("twitter", "h"))
+               .withFilter(this.client.newConditionBuilder().filterAttributeBeginsWith("twitter", "h"))
   return scanAndCheck(scan, [3, 4], test, "testFilterByBeginWith")
 })
 
 // test filtering with post 'BETWEEN' 2 3
 builder.add(function testFilterByBetween(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeBetween("post", 2, 3))
+               .withFilter(this.client.newConditionBuilder().filterAttributeBetween("post", 2, 3))
   return scanAndCheck(scan, [0, 3, 4], test, "testFilterByBetween")
 })
 
 // test filtering with post 'IN' 2 3
 builder.add(function testFilterByIn(test) {
   var scan = this.client.newScanBuilder(tableName)
-               .withFilter(this.client.newFilterBuilder().filterAttributeIn("post", [2, 3]))
+               .withFilter(this.client.newConditionBuilder().filterAttributeIn("post", [2, 3]))
   return scanAndCheck(scan, [0, 3, 4], test, "testFilterByIn")
 })
 
 builder.add(function testNext(test) {
   var numInFirstScan = 0
   return this.client.newScanBuilder(tableName)
-    .withFilter(this.client.newFilterBuilder().filterAttributeGreaterThan("post", 2))
+    .withFilter(this.client.newConditionBuilder().filterAttributeGreaterThan("post", 2))
     // The limit is *not* the number of records to return; instead it is
     // the number of records to scan. So the actual number of records returned
     // is not specified when a filter is given.
