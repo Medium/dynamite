@@ -17,6 +17,7 @@ exports.setUp = function (done) {
   var self = this
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
+  utils.ensureLocalDynamo()
   utils.createTable(self.db, "userRangeOnly", "userId")
     .thenBound(utils.initTable, null, {db: self.db, tableName: "userRangeOnly", data: initialData})
     .fail(onError)

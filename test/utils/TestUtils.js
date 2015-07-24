@@ -4,6 +4,7 @@
  * @module utils
  **/
 var AWS = require('aws-sdk')
+var localDynamo = require('local-dynamo')
 var Q = require('kew')
 var dynamite = require('../../dynamite')
 var AWSName = require('../../lib/common').AWSName
@@ -35,6 +36,27 @@ utils.getMockDatabase = function () {
 utils.getMockDatabaseClient = function () {
   return new dynamite.Client(options)
 }
+
+var localDynamoProc = null
+utils.ensureLocalDynamo = function () {
+  if (!localDynamoProc) {
+    localDynamoProc = localDynamo.launch({
+      port: 4567,
+      detached: true
+    })
+    localDynamoProc.on('exit', function () {
+      localDynamoProc = null
+    })
+    localDynamoProc.unref()
+  }
+
+  return localDynamoProc
+}
+process.on('exit', function () {
+  if (localDynamoProc) {
+    localDynamoProc.kill()
+  }
+})
 
 /*
  * A helper function that delete the testing table.

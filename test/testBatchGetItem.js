@@ -39,6 +39,7 @@ for (var i = 0; i < 101; i++) {
 exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
+  utils.ensureLocalDynamo()
 
   var userTablePromise = utils.createTable(this.db, 'user', 'userId', 'column')
     .thenBound(utils.initTable, null, {db: this.db, tableName: 'user', data: userData})
@@ -64,9 +65,7 @@ exports.tearDown = function (done) {
     utils.deleteTable(this.db, 'pre_many'),
     utils.deleteTable(this.db, 'mucho')
   ])
-  .then(function () {
-    done()
-  })
+  .fin(done)
 }
 
 builder.add(function testBatchGet(test) {
