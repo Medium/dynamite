@@ -12,6 +12,7 @@ var initialData = [{"userId": "userA", "column": "@", "age": "29"}]
 exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
+  utils.ensureLocalDynamo()
   utils.createTable(this.db, "user", "userId", "column")
     .thenBound(utils.initTable, null, {db: this.db, tableName: "user", data: initialData})
     .fail(onError)
@@ -20,9 +21,7 @@ exports.setUp = function (done) {
 
 exports.tearDown = function (done) {
   utils.deleteTable(this.db, "user")
-    .then(function () {
-      done()
-    })
+    .fin(done)
 }
 
 // check that an item exists

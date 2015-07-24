@@ -28,6 +28,7 @@ sortedRawData.sort(function(obj1, obj2) {
 exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
+  utils.ensureLocalDynamo()
   utils.createTable(this.db, tableName, "postId", "column")
     .thenBound(utils.initTable, null, {"db": this.db, "tableName": tableName, "data": rawData})
     .fail(onError)
@@ -36,9 +37,7 @@ exports.setUp = function (done) {
 
 exports.tearDown = function (done) {
   utils.deleteTable(this.db, tableName)
-    .then(function () {
-      done()
-    })
+    .fin(done)
 }
 
 function checkResults(test, total, offset) {

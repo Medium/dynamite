@@ -18,6 +18,7 @@ var initialData = [{
 exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
+  utils.ensureLocalDynamo()
   utils.createTable(this.db, "user", "userId", "column")
     .thenBound(utils.initTable, null, {db: this.db, tableName: "user", data: initialData})
     .fail(onError)

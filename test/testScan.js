@@ -21,6 +21,7 @@ var rawData = [{"userId": "a", "column": "@", "post": "3", "email": "1@medium.co
 exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
+  utils.ensureLocalDynamo()
   utils.createTable(this.db, tableName, "userId", "column")
     .thenBound(utils.initTable, null, {"db": this.db, "tableName": tableName, "data": rawData})
     .fail(onError)
@@ -29,9 +30,7 @@ exports.setUp = function (done) {
 
 exports.tearDown = function (done) {
   utils.deleteTable(this.db, tableName)
-    .then(function () {
-      done()
-    })
+    .fin(done)
 }
 
 /**
