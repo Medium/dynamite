@@ -518,6 +518,27 @@ builder.add(function testQueryFiltering(test) {
     })
 })
 
+builder.add(function testDeleteItem(test) {
+  var conditions = client.newConditionBuilder()
+    .expectAttributeEquals('userId', 'userA')
+
+  return client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .withCondition(conditions)
+    .deleteAttribute('age')
+    .execute()
+    .then(function () {
+      return client.getItem('user')
+        .setHashKey('userId', 'userA')
+        .setRangeKey('column', '@')
+        .execute()
+    })
+    .then(function (data) {
+      test.equal(data.result.age, undefined)
+    })
+})
+
 builder.add(function testLongKey(test) {
   // Create a string 2^10 chars long.
   var str = '.'
