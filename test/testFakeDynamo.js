@@ -493,6 +493,31 @@ builder.add(function testDescribeTable(test) {
     })
 })
 
+builder.add(function testQueryFiltering(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '1', age: 27, name: 'Ringo'},
+        2: {userId: 'userA', column: '4', age: 28, name: 'George'},
+        3: {userId: 'userA', column: '3', age: 29, name: 'John'},
+        4: {userId: 'userA', column: '2', age: 30, name: 'Paul'}
+    }
+  })
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeBeginsWith('name', 'Geo')
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 28)
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.deepEqual(data.result[0], {userId: 'userA', column: '4', age: 28, name: 'George'})
+      test.equal(data.result.length, 1)
+    })
+})
+
 builder.add(function testLongKey(test) {
   // Create a string 2^10 chars long.
   var str = '.'
