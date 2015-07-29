@@ -79,6 +79,23 @@ builder.add(function testFilterByComment(test) {
     .then(checkResults(test, 1, 1))
 })
 
+// test filter with limit
+builder.add(function testFilterWithLimit(test) {
+  var filter = this.client.newConditionBuilder()
+    .filterAttributeBeginsWith("comment", "wh")
+
+  // The limit parameter is applied before the filter
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBeginsWith('column', '/comment/')
+    .withFilter(filter)
+    .setLimit(2)
+    .execute()
+    .then(checkResults(test, 1, 2))
+})
+
+
+
 // test Index key between
 builder.add(function testIndexKeyBetween(test) {
   return this.client.newQueryBuilder('comments')
