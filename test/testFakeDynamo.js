@@ -394,6 +394,39 @@ builder.add(function testQueryWithLimit(test) {
     })
 })
 
+builder.add(function testQueryWithNext(test) {
+ db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '3', age: 27},
+        2: {userId: 'userA', column: '2', age: 28},
+        3: {userId: 'userA', column: '1', age: 29},
+        4: {userId: 'userA', column: '4', age: 30}
+    }
+  })
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 25)
+    .scanBackward()
+    .setLimit(3)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.length, 3)
+      test.equal(data.result[0].age, 30)
+      test.equal(data.result[1].age, 29)
+      test.equal(data.result[2].age, 28)
+      test.ok(data.hasNext())
+
+      return data.next()
+    })
+    .then(function (data) {
+      test.equal(data.result.length, 1)
+      test.equal(data.result[0].age, 27)
+      test.ok(!data.hasNext())
+    })
+})
+
 builder.add(function testQueryWithLimitBackwards(test) {
   db.getTable('user').setData({
     'userA': {
@@ -515,6 +548,57 @@ builder.add(function testQueryFiltering(test) {
     .then(function (data) {
       test.deepEqual(data.result[0], {userId: 'userA', column: '4', age: 28, name: 'George'})
       test.equal(data.result.length, 1)
+    })
+})
+
+builder.add(function testQueryFilterNotNull(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '1', age: 27, name: 'Ringo'},
+        2: {userId: 'userA', column: '4', age: 28, name: 'George'},
+        3: {userId: 'userA', column: '3', age: 29},
+        4: {userId: 'userA', column: '2', age: 30}
+    }
+  })
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeNotNull('name')
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 28)
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.deepEqual(data.result[0], {userId: 'userA', column: '4', age: 28, name: 'George'})
+      test.equal(data.result.length, 1)
+    })
+})
+
+builder.add(function testBooleanQueryFilter(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '1', age: 27, isHappy: true},
+        2: {userId: 'userA', column: '4', age: 28, isHappy: false},
+        3: {userId: 'userA', column: '3', age: 29, isHappy: true},
+        4: {userId: 'userA', column: '2', age: 30}
+    }
+  })
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeEquals('isHappy', true)
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 27)
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.length, 2)
+      test.deepEqual(data.result[0], {userId: 'userA', column: '1', age: 27, isHappy: true})
+      test.deepEqual(data.result[1], {userId: 'userA', column: '3', age: 29, isHappy: true})
     })
 })
 
