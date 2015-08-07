@@ -4,11 +4,16 @@ var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var Client = require('../lib/Client')
 var FakeDynamo = require('../lib/FakeDynamo')
-var typeUtil = require('../lib/TypeUtil')
+var typeUtil = require('../lib/typeUtil.js')
 var utils = require('./utils/testUtils.js')
 
 var onError = console.error.bind(console)
-var userA = {'userId': 'userA', 'column': '@', 'age': 29}
+var userA = {
+  'userId': 'userA',
+  'column': '@',
+  'age': 29,
+  'luckyNumbers': [1, 3, 5]
+}
 
 var db, client
 exports.setUp = function (done) {
@@ -18,7 +23,12 @@ exports.setUp = function (done) {
   var table = db.createTable('user')
   table.setHashKey('userId', 'S')
   table.setRangeKey('column', 'S')
-  table.setData({userA: {'@': userA}})
+  table.setData(
+    JSON.parse(JSON.stringify({userA: {'@': userA}})))
+  done()
+}
+
+exports.tearDown = function (done) {
   done()
 }
 
@@ -61,6 +71,28 @@ builder.add(function testConditionalUpdateOk(test) {
     })
     .then(function (data) {
       test.equal(data.result.age, 30, 'Age should match 30')
+    })
+})
+
+builder.add(function testAddToAttribute(test) {
+  var conditions = client.newConditionBuilder()
+    .expectAttributeEquals('userId', 'userA')
+
+  return client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .withCondition(conditions)
+    .addToAttribute('luckyNumbers', [8])
+    .execute()
+    .then(function () {
+      return client.getItem('user')
+        .setHashKey('userId', 'userA')
+        .setRangeKey('column', '@')
+        .execute()
+    })
+    .then(function (data) {
+      data.result.luckyNumbers.sort()
+      test.deepEqual(data.result.luckyNumbers, [1, 3, 5, 8])
     })
 })
 
@@ -620,6 +652,28 @@ builder.add(function testDeleteItem(test) {
     })
     .then(function (data) {
       test.equal(data.result.age, undefined)
+    })
+})
+
+builder.add(function testDeleteItemFromSet(test) {
+  var conditions = client.newConditionBuilder()
+    .expectAttributeEquals('userId', 'userA')
+
+  return client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .withCondition(conditions)
+    .deleteFromAttribute('luckyNumbers', [3])
+    .execute()
+    .then(function () {
+      return client.getItem('user')
+        .setHashKey('userId', 'userA')
+        .setRangeKey('column', '@')
+        .execute()
+    })
+    .then(function (data) {
+      data.result.luckyNumbers.sort()
+      test.deepEqual(data.result.luckyNumbers, [1, 5])
     })
 })
 
