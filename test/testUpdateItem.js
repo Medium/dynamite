@@ -43,7 +43,9 @@ builder.add(function testPutAttributeExisting(test) {
     .execute()
     .then(function (data) {
       test.equal(data.result.age, 30, 'result age should be 30')
-      test.equal(data.result.height, 72, 'height should be 72')
+      test.equal(data.result.height, 72, 'result height should be 72')
+      test.equal(data.previous.age, 29, 'previous age should be 29')
+      test.equal(data.previous.height, undefined, 'previous height should be undefined')
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -65,7 +67,7 @@ builder.add(function testPutAttributeNonExisting(test) {
     .execute()
     .then(function (data) {
       test.equal(data.result.age, 30, 'result age should be 30')
-      test.equal(data.result.height, 72, 'height should be 72')
+      test.equal(data.result.height, 72, 'result height should be 72')
       return utils.getItemWithSDK(self.db, "userB", "@")
     })
     .then(function (data) {
@@ -104,7 +106,9 @@ builder.add(function testAddAttributeExisting(test) {
     .execute()
     .then(function (data) {
       test.equal(data.result.age, 30, 'result age should be 30')
-      test.equal(data.result.views, -1, 'views should be -1')
+      test.equal(data.result.views, -1, 'result views should be -1')
+      test.equal(data.previous.age, 29, 'previous age should be 29')
+      test.equal(data.previous.views, undefined, 'previous views should be undefined')
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -151,6 +155,9 @@ builder.add(function testDeleteAttributeExisting(test) {
       test.equal(data.result.age, undefined, 'result age should be undefined')
       test.equal(data.result.height, undefined, 'height should be undefined')
       test.deepEqual(data.result.someStringSet, ['a'], 'someStringSet should contain "a"')
+      test.equal(data.previous.age, 29, 'previous age should be 29')
+      test.equal(data.previous.height, undefined, 'height should be undefined')
+      test.deepEqual(data.previous.someStringSet, ['a', 'b', 'c'], 'someStringSet should contain "a", "b", "c"')
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -281,6 +288,26 @@ builder.add(function testUpdateWithAbsentConditionalDoesNotExist(test) {
     .then(function (data) {
       test.equal(data['Item']['age'].N, "30", 'result age should be 30')
       test.equal(data['Item']['height'].N, "72", 'height should be 72')
+    })
+})
+
+// Test that deleting from a non-existant record upserts a new item
+builder.add(function testUpdateWithDeleteAttributeDoesNotExist(test) {
+  var self = this
+
+  return this.client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userC')
+    .setRangeKey('column', '@')
+    .enableUpsert()
+    .deleteAttribute('age')
+    .deleteAttribute('height')
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.userId, 'userC', 'userId should be set')
+      return utils.getItemWithSDK(self.db, "userC", "@")
+    })
+    .then(function (data) {
+      test.equal(data.Item.userId.S, 'userC', 'userId should be set')
     })
 })
 
