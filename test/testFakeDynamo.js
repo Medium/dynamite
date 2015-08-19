@@ -644,7 +644,9 @@ builder.add(function testDeleteItem(test) {
     .withCondition(conditions)
     .deleteAttribute('age')
     .execute()
-    .then(function () {
+    .then(function (data) {
+      test.equal(data.result.column, '@')
+      test.equal(data.result.age, undefined)
       return client.getItem('user')
         .setHashKey('userId', 'userA')
         .setRangeKey('column', '@')
@@ -652,6 +654,30 @@ builder.add(function testDeleteItem(test) {
     })
     .then(function (data) {
       test.equal(data.result.age, undefined)
+    })
+})
+
+builder.add(function testPutAttributeNonExisting(test) {
+  var self = this
+
+  return client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userB')
+    .setRangeKey('column', '@')
+    .enableUpsert()
+    .putAttribute('age', 30)
+    .putAttribute('height', 72)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.age, 30, 'result age should be 30')
+      test.equal(data.result.height, 72, 'result height should be 72')
+      return client.getItem('user')
+        .setHashKey('userId', 'userB')
+        .setRangeKey('column', '@')
+        .execute()
+    })
+    .then(function (data) {
+      test.equal(data.result.age, 30, 'result age should be 30')
+      test.equal(data.result.height, 72, 'result height should be 72')
     })
 })
 
