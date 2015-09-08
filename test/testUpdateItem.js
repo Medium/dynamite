@@ -66,6 +66,7 @@ builder.add(function testPutAttributeNonExisting(test) {
     .putAttribute('height', 72)
     .execute()
     .then(function (data) {
+      test.equal(data.previous, null, 'previous should be null')
       test.equal(data.result.age, 30, 'result age should be 30')
       test.equal(data.result.height, 72, 'result height should be 72')
       return utils.getItemWithSDK(self.db, "userB", "@")
