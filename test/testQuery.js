@@ -309,3 +309,27 @@ builder.add(function testNext(test) {
       if (e.message !== 'No more results') throw e
     })
 })
+
+builder.add(function testNextWithLimit(test) {
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBetween('column', '/comment/', '/comment/timestamp/999999')
+    .setLimit(2)
+    .execute()
+    .then(function (data) {
+      test.equal(2, data.Count)
+      test.ok(data.hasNext())
+      return data.next(3)
+    })
+    .then(function (data) {
+      test.equal(2, data.Count)
+      test.ok(!data.hasNext())
+      return data.next()
+    })
+    .then(function (data) {
+      test.fail('Expected error')
+    })
+    .fail(function (e) {
+      if (e.message !== 'No more results') throw e
+    })
+})
