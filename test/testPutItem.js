@@ -44,6 +44,25 @@ builder.add(function testSimplePut(test) {
   })
 })
 
+builder.add(function testPutItemWithReturnValuesNone(test) {
+  var self = this
+  return this.client.putItem("user", {
+    userId: 'userB',
+    column: '@',
+    age: 30
+  })
+  .setReturnValues('NONE')
+  .execute()
+  .then(function (data) {
+    test.equal(data.result, undefined)
+
+    return utils.getItemWithSDK(self.db, "userB", "@")
+  })
+  .then(function (data) {
+    test.equal(data['Item']['age'].N, "30", "Age should be set")
+  })
+})
+
 // put overrides all fields
 builder.add(function testOverridePut(test) {
   var self = this
