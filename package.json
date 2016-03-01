@@ -3,11 +3,7 @@
   "description": "promise-based DynamoDB client",
   "version": "0.6.26",
   "homepage": "https://github.com/Medium/dynamite",
-  "licenses" : [
-    { "type": "Apache License, Version 2.0",
-      "url": "https://github.com/Medium/dynamite/blob/master/LICENSE"
-    }
-  ],
+  "license": "Apache-2.0",
   "authors": [
     "Jeremy Stanley <github@azulus.com> (https://github.com/azulus)",
     "Jean Hsu <jean@medium.com> (https://github.com/jyhsu)",
