@@ -28,7 +28,7 @@
   "dependencies": {
     "kew": "0.7.0",
     "typ": "0.6.3",
-    "aws-sdk": "2.1.35"
+    "aws-sdk": "2.2.39"
   },
   "devDependencies": {
     "closure-npc": "0.1.3",
