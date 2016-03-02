@@ -1,8 +1,6 @@
-# Dynamite
+# Dynamite [![Build Status](https://travis-ci.org/Medium/dynamite.svg?branch=master)](https://travis-ci.org/Medium/dynamite)
 
 Dynamite is a promise-based DynamoDB client. It was created to address performance issues in our previous DynamoDB client. Dynamite will almost always comply with the latest DynamoDB spec on Amazon.
-
-Dynamite is based upon, and has an API compatibility with, an older in-house library called [Commutator](https://github.com/Obvious/commutator). Commutator details many of the underlying components in Dynamite and is thus a solid read to understand how Dynamite functions.
 
 ## Installation
 
@@ -58,7 +56,7 @@ Options can also optionally take a hash with a key `dbClient` which points to an
 
 ### Foreword: Kew and You
 
-All functions return [Kew](https://github.com/Obvious/kew) promises on `execute()`. These functions will all then take the form:
+All functions return [Kew](https://github.com/Medium/kew) promises on `execute()`. These functions will all then take the form:
 
 	client.fn(params)
 		.execute()
