@@ -30,6 +30,16 @@ exports.tearDown = function (done) {
     .fin(done)
 }
 
+builder.add(function testSetInvalidReturnValue(test) {
+  var updateBuilder = this.client.newUpdateBuilder('user')
+
+  test.throws(function () {
+    updateBuilder.setReturnValues('ALL_SOMETHING')
+  }, errors.InvalidReturnValuesError)
+
+  test.done()
+})
+
 // test putting an attribute for an existing record
 builder.add(function testPutAttributeExisting(test) {
   var self = this
