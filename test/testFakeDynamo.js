@@ -4,7 +4,6 @@ var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var Client = require('../lib/Client')
 var FakeDynamo = require('../lib/FakeDynamo')
-var typeUtil = require('../lib/typeUtil.js')
 var utils = require('./utils/testUtils.js')
 
 var onError = console.error.bind(console)

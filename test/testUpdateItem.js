@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
 var errors = require('../lib/errors')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
@@ -29,6 +28,16 @@ exports.tearDown = function (done) {
   utils.deleteTable(this.db, "user")
     .fin(done)
 }
+
+builder.add(function testSetInvalidReturnValue(test) {
+  var updateBuilder = this.client.newUpdateBuilder('user')
+
+  test.throws(function () {
+    updateBuilder.setReturnValues('ALL_SOMETHING')
+  }, errors.InvalidReturnValuesError)
+
+  test.done()
+})
 
 // test putting an attribute for an existing record
 builder.add(function testPutAttributeExisting(test) {

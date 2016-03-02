@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var errors = require('../lib/errors')
@@ -26,6 +25,19 @@ exports.tearDown = function (done) {
   utils.deleteTable(this.db, "user")
     .fin(done)
 }
+
+builder.add(function testSetInvalidReturnValue(test) {
+  var putBuilder = this.client.putItem('user', {
+    userId: 'userB',
+    age: 30
+  })
+
+  test.throws(function () {
+    putBuilder.setReturnValues('ALL_SOMETHING')
+  }, errors.InvalidReturnValuesError)
+
+  test.done()
+})
 
 // put an item and check that it exists
 builder.add(function testSimplePut(test) {
