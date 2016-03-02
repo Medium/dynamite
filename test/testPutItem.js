@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var errors = require('../lib/errors')

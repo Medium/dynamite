@@ -3,7 +3,6 @@ var AWS = require('aws-sdk');
 var utils = require('./utils/testUtils.js')
 var dynamite = require('../dynamite')
 var typ = require('typ')
-var errors = require('../lib/errors')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
