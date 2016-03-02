@@ -3,11 +3,7 @@
   "description": "promise-based DynamoDB client",
   "version": "0.6.26",
   "homepage": "https://github.com/Medium/dynamite",
-  "licenses" : [
-    { "type": "Apache License, Version 2.0",
-      "url": "https://github.com/Medium/dynamite/blob/master/LICENSE"
-    }
-  ],
+  "license": "Apache-2.0",
   "authors": [
     "Jeremy Stanley <github@azulus.com> (https://github.com/azulus)",
     "Jean Hsu <jean@medium.com> (https://github.com/jyhsu)",
@@ -26,15 +22,15 @@
     "url": "https://github.com/Medium/dynamite.git"
   },
   "dependencies": {
-    "kew": "0.6.0",
-    "typ": "0.6.2",
-    "aws-sdk": "2.1.35"
+    "kew": "0.7.0",
+    "typ": "0.6.3",
+    "aws-sdk": "2.2.39"
   },
   "devDependencies": {
     "closure-npc": "0.1.3",
     "nodeunit": "0.9.1",
     "nodeunitq": "0.1.1",
-    "local-dynamo": "0.1.2"
+    "local-dynamo": "0.2.0"
   },
   "externDependencies": {
     "aws-sdk": "./externs/aws-sdk.js"

@@ -42,7 +42,8 @@ utils.ensureLocalDynamo = function () {
   if (!localDynamoProc) {
     localDynamoProc = localDynamo.launch({
       port: 4567,
-      detached: true
+      detached: true,
+      heap: '1g'
     })
     localDynamoProc.on('exit', function () {
       localDynamoProc = null
@@ -213,7 +214,7 @@ utils.getItemWithSDK = function (db, hashKey, rangeKey, table) {
       TableName: table,
       Key: {
         HashKeyElement: {"S": hashKey}
-      } 
+      }
     }
 
     if (rangeKey) {

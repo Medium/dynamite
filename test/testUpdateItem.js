@@ -242,6 +242,29 @@ builder.add(function testUpdateWithConditional(test) {
     })
 })
 
+// test updating with returnValues set to NONE
+builder.add(function testUpdateWithReturnValuesNone(test) {
+  var self = this
+
+  return this.client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .enableUpsert()
+    .putAttribute('age', 30)
+    .putAttribute('height', 72)
+    .setReturnValues('NONE')
+    .execute()
+    .then(function (data) {
+      test.equal(data.result, undefined)
+
+      return utils.getItemWithSDK(self.db, "userA", "@")
+    })
+    .then(function (data) {
+      test.equal(data['Item']['age'].N, "30", 'result age should be 30')
+      test.equal(data['Item']['height'].N, "72", 'height should be 72')
+    })
+})
+
 // test updating with absent conditional exists
 builder.add(function testUpdateWithAbsentConditionalExists(test) {
   var self = this
