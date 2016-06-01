@@ -9,20 +9,11 @@ Dynamite is a promise-based DynamoDB client. It was created to address performan
 
 ## Running Tests
 
-Currently, Dynamite runs tests against the [Fake
-Dynamo](https://github.com/ananthakumaran/fake_dynamo) Ruby gem. To install the gem:
-
-	$ gem install fake_dynamo
-
-To run the service, with an optional log level of `debug` (show everything) on port 4567, run the following in a different terminal window or as a background process:
-
-	$ fake_dynamo -l debug -p 4567
-
 Ensure that all of the required node modules are installed in the Dynamite directory by first running:
 
 	$ npm install
 
-The tests will be run against the `fake_dynamo` service running on port `4567`. Currently, there is no way to change the port without modifying the connection code in `test/utils/TestUtils.js`. To run the tests:
+The tests will be run against a `LocalDynamo` service. Currently, there is no way to change the port without modifying the connection code in `test/utils/TestUtils.js`. To run the tests:
 
 	$ npm test
 
