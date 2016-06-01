@@ -332,3 +332,17 @@ builder.add(function testNextWithLimit(test) {
       if (e.message !== 'No more results') throw e
     })
 })
+
+builder.add(function testValidationError(test) {
+  var client = this.client
+  return client.newQueryBuilder('comments')
+    .setHashKey('garbage', 'postId')
+    .execute()
+    .then(function (x) {
+      test.fail('Expected validation exception')
+    })
+    .fail(function (e) {
+      if (!client.isValidationError(e)) throw e
+      test.equal('comments', e.table)
+    })
+})
