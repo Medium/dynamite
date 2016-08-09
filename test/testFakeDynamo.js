@@ -720,3 +720,27 @@ builder.add(function testLongKey(test) {
     if (!client.isValidationError(e)) throw e
   })
 })
+
+builder.add(function testQueryFilterIn(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '1', age: 27, name: 'Ringo'},
+        2: {userId: 'userA', column: '4', age: 28, name: 'George'},
+        3: {userId: 'userA', column: '3', age: 29, name: 'Paul'},
+        4: {userId: 'userA', column: '2', age: 30}
+    }
+  })
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeIn('name', ['Ringo', 'George'])
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.deepEqual(['George', 'Ringo'], data.result.map(function (r) {
+        return r.name
+      }).sort())
+    })
+})
