@@ -88,14 +88,13 @@ builder.add(function testPutAttributeNonExisting(test) {
 
 //test putting attributes with empty would succeed
 builder.add(function testPutAttributeEmpty(test) {
-  var self = this
   return this.client.newUpdateBuilder('user')
     .setHashKey('userId', 'userA')
     .setRangeKey('column', '@')
     .enableUpsert()
     .putAttribute('name', '')
     .execute()
-    .then(function (data) {
+    .then(function () {
       test.fail("'testPutAttributeEmpty' failed - the query is expected to fail, but it didn't.")
     })
     .fail(function (e) {
@@ -346,8 +345,6 @@ builder.add(function testUpdateWithDeleteAttributeDoesNotExist(test) {
 
 // test updating fails with conditional exists
 builder.add(function testUpdateFailsWithConditional(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeEquals('age', 30)
 
@@ -358,7 +355,7 @@ builder.add(function testUpdateFailsWithConditional(test) {
     .putAttribute('age', 30)
     .putAttribute('height', 72)
     .execute()
-    .then(function (data) {
+    .then(function () {
       test.fail("'testUpdateFailsWithConditional' failed - the query is expected to fail, but it didn't.")
     })
     .fail(this.client.throwUnlessConditionalError)
@@ -366,8 +363,6 @@ builder.add(function testUpdateFailsWithConditional(test) {
 
 // test updating fails with conditional doesnt exist
 builder.add(function testUpdateFailsWithConditionalDoesNotExist(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeEquals('age', 30)
 
@@ -378,7 +373,7 @@ builder.add(function testUpdateFailsWithConditionalDoesNotExist(test) {
     .putAttribute('age', 30)
     .putAttribute('height', 72)
     .execute()
-    .then(function (data) {
+    .then(function () {
       test.fail("'testUpdateFailsWithConditionalDoesNotExist' failed - the query is expected to fail, but it didn't.")
     })
     .fail(this.client.throwUnlessConditionalError)
@@ -386,8 +381,6 @@ builder.add(function testUpdateFailsWithConditionalDoesNotExist(test) {
 
 // test updating fails with absent conditional exists
 builder.add(function testUpdateFailsWithAbsentConditional(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeAbsent('age')
 
@@ -398,7 +391,7 @@ builder.add(function testUpdateFailsWithAbsentConditional(test) {
     .putAttribute('age', 30)
     .putAttribute('height', 72)
     .execute()
-    .then(function (data) {
+    .then(function () {
       test.fail("'testUpdateFailsWithAbsentConditional' failed - the query is expected to fail, but it didn't.")
     })
     .fail(this.client.throwUnlessConditionalError)

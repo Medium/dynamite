@@ -1,12 +1,10 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
 var onError = console.error.bind(console)
-var initialData = [{"userId": "userA", "column": "@", "age": "29"}]
 
 // basic setup for the tests, creating record userA with range key @
 exports.setUp = function (done) {

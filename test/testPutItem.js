@@ -161,8 +161,6 @@ builder.add(function testPutWithAbsentConditionalAndNoRecord(test) {
 
 // put with failed conditional exists
 builder.add(function testPutWithFailedConditional(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeEquals('age', 30)
 
@@ -181,8 +179,6 @@ builder.add(function testPutWithFailedConditional(test) {
 
 // put with failed conditional doesn't exist
 builder.add(function testPutWithFailedConditionalForNoRecord(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeEquals('age', 29)
 
@@ -201,8 +197,6 @@ builder.add(function testPutWithFailedConditionalForNoRecord(test) {
 
 // put set with failed absent conditional exists
 builder.add(function testPutWithFailedAbsentConditionalExists(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeAbsent('age')
 

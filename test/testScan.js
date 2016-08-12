@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var Q = require("kew")
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
@@ -13,7 +12,7 @@ var rawData = [{"userId": "a", "column": "@", "post": "3", "email": "1@medium.co
                {"userId": "d", "column": "@", "post": "2", "twitter": "haha"},
                {"userId": "e", "column": "@", "post": "2", "twitter": "hoho"},
                {"userId": "f", "column": "@", "post": "4", "description": "Designer", "email": "h@w.com"},
-               {"userId": "h", "column": "@", "post": "6", "tags": ['bar', 'foo']}];
+               {"userId": "h", "column": "@", "post": "6", "tags": ['bar', 'foo']}]
 
 
 // basic setup for the tests, creating record userA with range key @
@@ -110,9 +109,6 @@ builder.add(function testFilterByNotNull(test) {
   var scan = this.client.newScanBuilder(tableName)
                .withFilter(this.client.newConditionBuilder().filterAttributeNotNull("post"))
   return scanAndCheck(scan, [0, 1, 2, 3, 4, 5, 6], test)
-  scan = this.client.newScanBuilder(tableName)
-           .withFilter(this.client.newConditionBuilder().filterAttributeNotNull("email"))
-  return scanAndCheck(scan, [0, 2, 5], test)
 })
 
 // test filtering with email 'CONTAINS' 'medium'
@@ -183,7 +179,7 @@ builder.add(function testNext(test) {
       test.ok(!data.hasNext())
       return data.next()
     })
-    .then(function (data) {
+    .then(function () {
       test.fail('Expected error')
     })
     .fail(function (e) {

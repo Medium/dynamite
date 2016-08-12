@@ -1,8 +1,5 @@
 // Copyright 2013 The Obvious Corporation.
-var AWS = require('aws-sdk');
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
-var typ = require('typ')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
@@ -101,7 +98,7 @@ builder.add(function testDeleteItem(test) {
   return self.client.deleteItem('userRangeOnly')
     .setHashKey('userId', 'userA')
     .execute()
-    .then(function (data) {
+    .then(function () {
       return utils.getItemWithSDK(self.db, "userA", null, "userRangeOnly")
     })
     .then(function (data) {

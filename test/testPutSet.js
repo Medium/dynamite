@@ -195,7 +195,7 @@ builder.add(function testStringSetPutWithFailedConditional(test) {
   .then(function () {
     return utils.getItemWithSDK(self.db, "userA", "@")
   })
-  .then(function (data) {
+  .then(function () {
     test.fail("'testStringSetPutWithFailedConditional' failed")
   })
   .fail(this.client.throwUnlessConditionalError)
@@ -218,7 +218,7 @@ builder.add(function testStringSetPutWithFailedConditionalForNoRecord(test) {
   .then(function () {
     return utils.getItemWithSDK(self.db, "userC", "@")
   })
-  .then(function (data) {
+  .then(function () {
     test.fail("'testStringSetPutWithFailedConditionalForNoRecord' failed")
   })
   .fail(this.client.throwUnlessConditionalError)
@@ -241,7 +241,7 @@ builder.add(function testStringSetPutWithFailedConditionalExists(test) {
   .then(function () {
     return utils.getItemWithSDK(self.db, "userA", "@")
   })
-  .then(function (data) {
+  .then(function () {
     test.fail("'testStringSetPutWithFailedConditionalForNoRecord' failed")
   })
   .fail(this.client.throwUnlessConditionalError)

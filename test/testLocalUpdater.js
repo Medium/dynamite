@@ -106,7 +106,7 @@ builder.add(function testAddToNumber(test) {
 builder.add(function testAddToEmptyNumber(test) {
   var data = typeUtil.packObjectOrArray({
     "userId": "userA",
-    "column": "@",
+    "column": "@"
   })
 
   var updated = localUpdater.update(data, {

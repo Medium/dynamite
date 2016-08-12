@@ -140,7 +140,7 @@ utils.createTable = function (db, tableName, hashKey, rangeKey) {
  * @return {Object} The same data in AWS JSON
  */
 var convert = function (obj) {
-  items = {}
+  var items = {}
   for (var key in obj) {
     if (Array.isArray(obj[key]) && isNaN(obj[key][0])) {
       items[key] = {"SS": obj[key]}
@@ -185,7 +185,7 @@ var putOneRecord = function(db, tableName, record) {
  *
  * @return {Promise}
  */
-utils.initTable = function (context, response) {
+utils.initTable = function (context) {
   var db = context.db
   var promises = []
   for (var i = 0; i < context.data.length; i += 1) {
@@ -218,7 +218,7 @@ utils.getItemWithSDK = function (db, hashKey, rangeKey, table) {
     }
 
     if (rangeKey) {
-      Key.RangeKeyElement = {"S": rangeKey}
+      opts.Key.RangeKeyElement = {"S": rangeKey}
     }
 
     db.getItem(
