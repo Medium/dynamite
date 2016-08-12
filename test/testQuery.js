@@ -1,5 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
+var ConditionBuilder = require('../lib/ConditionBuilder')
 var utils = require('./utils/testUtils.js')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
@@ -363,4 +364,18 @@ builder.add(function testRetryHandler(test) {
     .fail(function () {
       test.equal(calledRetryHandler, 1)
     })
+})
+
+
+builder.add(function testKeyConditionExpression(test) {
+  var filter = this.client.newConditionBuilder()
+    .filterAttributeBeginsWith("comment", "HEY")
+
+  var data = {}
+  ConditionBuilder.populateExpressionField(
+      data, 'KeyConditionExpression', [filter], {})
+  test.equal('{"#comment":"comment"}', JSON.stringify(data.ExpressionAttributeNames))
+  test.equal('{":VC1XcommentX0":{"S":"HEY"}}', JSON.stringify(data.ExpressionAttributeValues))
+  test.equal('begins_with(#comment, :VC1XcommentX0)', data.KeyConditionExpression)
+  test.done()
 })
