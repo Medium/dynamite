@@ -4,9 +4,7 @@ var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var Client = require('../lib/Client')
 var FakeDynamo = require('../lib/FakeDynamo')
-var utils = require('./utils/testUtils.js')
 
-var onError = console.error.bind(console)
 var userA = {
   'userId': 'userA',
   'column': '@',
@@ -128,10 +126,10 @@ builder.add(function testScan(test) {
     'userA': {
         1: {userId: 'userA', column: '1', age: 27},
         2: {userId: 'userA', column: '2', age: 28},
-        3: {userId: 'userA', column: '3', age: 29},
+        3: {userId: 'userA', column: '3', age: 29}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newScanBuilder('user')
@@ -150,7 +148,7 @@ builder.add(function testScanWithLimit(test) {
     'userA': {
         1: {userId: 'userA', column: '1', age: 27},
         2: {userId: 'userA', column: '2', age: 28},
-        3: {userId: 'userA', column: '3', age: 29},
+        3: {userId: 'userA', column: '3', age: 29}
     }
   })
   return client.newScanBuilder('user')
@@ -169,10 +167,10 @@ builder.add(function testScanWithStartKey(test) {
     'userA': {
         1: {userId: 'userA', column: '1', age: 27},
         2: {userId: 'userA', column: '2', age: 28},
-        3: {userId: 'userA', column: '3', age: 29},
+        3: {userId: 'userA', column: '3', age: 29}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newScanBuilder('user')
@@ -193,10 +191,10 @@ builder.add(function testQueryOnSecondaryIndexGreaterThan(test) {
         1: {userId: 'userA', column: 3, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
         3: {userId: 'userA', column: 5, age: 3000},
-        4: {userId: 'userA', column: 4, age: 29},
+        4: {userId: 'userA', column: 4, age: 29}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newQueryBuilder('user')
@@ -219,10 +217,10 @@ builder.add(function testQueryOnSecondaryIndexLessThan(test) {
         1: {userId: 'userA', column: 3, age: 26},
         2: {userId: 'userA', column: 2, age: 28},
         3: {userId: 'userA', column: 1, age: 30},
-        4: {userId: 'userA', column: 4, age: 29},
+        4: {userId: 'userA', column: 4, age: 29}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newQueryBuilder('user')
@@ -247,10 +245,10 @@ builder.add(function testQueryOnSecondaryIndexLessThanEquals(test) {
         1: {userId: 'userA', column: 3, age: 26},
         2: {userId: 'userA', column: 2, age: 28},
         3: {userId: 'userA', column: 1, age: 29},
-        4: {userId: 'userA', column: 4, age: 30},
+        4: {userId: 'userA', column: 4, age: 30}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newQueryBuilder('user')
@@ -276,10 +274,10 @@ builder.add(function testQueryOnSecondaryIndexEquals(test) {
         1: {userId: 'userA', column: 3, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
         3: {userId: 'userA', column: 1, age: 29},
-        4: {userId: 'userA', column: 4, age: 30},
+        4: {userId: 'userA', column: 4, age: 30}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newQueryBuilder('user')
@@ -300,10 +298,10 @@ builder.add(function testQueryOnGlobalSecondaryIndexEquals(test) {
         1: {userId: 'userA', column: 3, age: 27},
         2: {userId: 'userA', column: 2, age: 28},
         3: {userId: 'userA', column: 1, age: 29},
-        4: {userId: 'userA', column: 4, age: 30},
+        4: {userId: 'userA', column: 4, age: 30}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
   return client.newQueryBuilder('user')
@@ -327,10 +325,10 @@ builder.add(function testQueryOnMultipleIndexes(test) {
         2: {userId: 'userA', column: '4', age: 28},
         3: {userId: 'userA', column: '3', age: 29},
         4: {userId: 'userA', column: '2', age: 30},
-        5: {userId: 'userA', column: '5', age: 30},
+        5: {userId: 'userA', column: '5', age: 30}
     },
     'userB': {
-        1: {userId: 'userB', column: '1', age: 29},
+        1: {userId: 'userB', column: '1', age: 29}
     }
   })
 
@@ -359,13 +357,13 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
         1: {userId: 'userA', column: '3', age: 27, height: 160},
         2: {userId: 'userA', column: '2', age: 28, height: 170},
         3: {userId: 'userA', column: '1', age: 28, height: 180},
-        4: {userId: 'userA', column: '4', age: 29, height: 150},
+        4: {userId: 'userA', column: '4', age: 29, height: 150}
     },
     'userB': {
         1: {userId: 'userB', column: '3', age: 27, height: 200},
         2: {userId: 'userB', column: '2', age: 28, height: 170},
         3: {userId: 'userB', column: '1', age: 28, height: 178},
-        4: {userId: 'userB', column: '4', age: 29, height: 190},
+        4: {userId: 'userB', column: '4', age: 29, height: 190}
     }
   })
 
@@ -544,7 +542,7 @@ builder.add(function testDescribeTable(test) {
       }
 
       // deep check key schemas
-      for (var i = 0; i < keySchema.length; i++) {
+      for (i = 0; i < keySchema.length; i++) {
         var key = keySchema[i]
         if (key.AttributeName == 'userId') {
           test.deepEqual(key, {AttributeName: 'userId', KeyType: 'HASH'})
@@ -657,8 +655,6 @@ builder.add(function testDeleteItem(test) {
 })
 
 builder.add(function testPutAttributeNonExisting(test) {
-  var self = this
-
   return client.newUpdateBuilder('user')
     .setHashKey('userId', 'userB')
     .setRangeKey('column', '@')

@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 var Q = require('kew')
@@ -31,7 +30,7 @@ for (var i = 0; i < 202; i++) {
 // Generate big items that will exceed amount allowed to be returned.
 var muchoData = []
 var junk = new Array(62000).join('.')
-for (var i = 0; i < 101; i++) {
+for (i = 0; i < 101; i++) {
   muchoData.push({'hashKey': 'id' + i, 'column': '@', 'data': junk})
 }
 

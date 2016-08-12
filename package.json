@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "closure-npc": "0.1.3",
+    "eslint": "2.7.0",
     "nodeunit": "0.9.1",
     "nodeunitq": "0.1.1",
     "local-dynamo": "0.2.0"
@@ -36,6 +37,6 @@
     "aws-sdk": "./externs/aws-sdk.js"
   },
   "scripts": {
-    "test": "./node_modules/.bin/nodeunit test && ./node_modules/.bin/closure-npc . --jscomp_error=checkTypes"
+    "test": "eslint . && ./node_modules/.bin/nodeunit test && ./node_modules/.bin/closure-npc . --jscomp_error=checkTypes"
   }
 }

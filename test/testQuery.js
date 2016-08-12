@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var Q = require("kew")
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
 
@@ -12,7 +11,7 @@ var rawData = [{"postId": "post1", "column": "@", "title": "This is my post", "c
                {"postId": "post1", "column": "/comment/timestamp/010000", "comment": "where am I?"},
                {"postId": "post1", "column": "/comment/timestamp/001111", "comment": "HEYYOOOOO"},
                {"postId": "post1", "column": "/comment/timestamp/001112", "comment": "what's up?"},
-               {"postId": "post1", "column": "/canEdit/user/AAA", "userId": "AAA"}];
+               {"postId": "post1", "column": "/canEdit/user/AAA", "userId": "AAA"}]
 
 // sorted data for checking the order of returned data
 var sortedRawData = []
@@ -301,7 +300,7 @@ builder.add(function testNext(test) {
       test.ok(!data.hasNext())
       return data.next()
     })
-    .then(function (data) {
+    .then(function () {
       test.fail('Expected error')
     })
     .fail(function (e) {
@@ -325,7 +324,7 @@ builder.add(function testNextWithLimit(test) {
       test.ok(!data.hasNext())
       return data.next()
     })
-    .then(function (data) {
+    .then(function () {
       test.fail('Expected error')
     })
     .fail(function (e) {
@@ -338,7 +337,7 @@ builder.add(function testValidationError(test) {
   return client.newQueryBuilder('comments')
     .setHashKey('garbage', 'postId')
     .execute()
-    .then(function (x) {
+    .then(function () {
       test.fail('Expected validation exception')
     })
     .fail(function (e) {

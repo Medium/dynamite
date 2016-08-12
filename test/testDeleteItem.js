@@ -1,7 +1,6 @@
 // Copyright 2013 The Obvious Corporation.
 
 var utils = require('./utils/testUtils.js')
-var dynamite = require('../dynamite')
 var typ = require('typ')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)
@@ -33,7 +32,7 @@ builder.add(function testDeleteExistingItem(test) {
     .setHashKey('userId', 'userA')
     .setRangeKey('column', '@')
     .execute()
-    .then(function (data) {
+    .then(function () {
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -49,7 +48,7 @@ builder.add(function testDeleteNonexistingItem(test) {
     .setHashKey('userId', 'userB')
     .setRangeKey('column', '@')
     .execute()
-    .then(function (data) {
+    .then(function () {
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -69,7 +68,7 @@ builder.add(function testDeleteExistingItemWithConditional(test) {
     .setRangeKey('column', '@')
     .withCondition(conditions)
     .execute()
-    .then(function (data) {
+    .then(function () {
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -89,7 +88,7 @@ builder.add(function testDeleteExistingItemWithConditionalAbsent(test) {
     .setRangeKey('column', '@')
     .withCondition(conditions)
     .execute()
-    .then(function (data) {
+    .then(function () {
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
@@ -99,8 +98,6 @@ builder.add(function testDeleteExistingItemWithConditionalAbsent(test) {
 
 // check that an item fails a conditional when deleting
 builder.add(function testDeleteExistingItemWithFailedConditional(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeEquals('column', 'bug')
 
@@ -117,8 +114,6 @@ builder.add(function testDeleteExistingItemWithFailedConditional(test) {
 
 // check that an item fails an absent conditional when deleting
 builder.add(function testDeleteExistingItemWithFailedAbsentConditional(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeAbsent('age')
 
@@ -135,8 +130,6 @@ builder.add(function testDeleteExistingItemWithFailedAbsentConditional(test) {
 
 // check that non-existent items can't be deleted if a conditional expects a value
 builder.add(function testDeleteNonexistingItemWithConditional(test) {
-  var self = this
-
   var conditions = this.client.newConditionBuilder()
     .expectAttributeEquals('column', '@')
 
@@ -145,7 +138,7 @@ builder.add(function testDeleteNonexistingItemWithConditional(test) {
     .setRangeKey('column', '@')
     .withCondition(conditions)
     .execute()
-    .then(function (e) {
+    .then(function () {
       test.fail("'testDeleteNonexistingItemWithConditional' failed")
     })
     .fail(this.client.throwUnlessConditionalError)
@@ -163,7 +156,7 @@ builder.add(function testDeleteNonexistingItemWithConditionalAbsent(test) {
     .setRangeKey('column', '@')
     .withCondition(conditions)
     .execute()
-    .then(function (data) {
+    .then(function () {
       return utils.getItemWithSDK(self.db, "userA", "@")
     })
     .then(function (data) {
