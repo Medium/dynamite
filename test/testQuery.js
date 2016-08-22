@@ -345,3 +345,22 @@ builder.add(function testValidationError(test) {
       test.equal('comments', e.table)
     })
 })
+
+builder.add(function testDisableRetries(test) {
+  var client = this.client
+  var calledRetryHandler = 0
+
+  return client.newQueryBuilder('comments')
+    .setHashKey('invalid', 'post1')
+    .setRetryHandler(function (method, table, response) {
+      test.equal(response.error.retryable, false)
+      ++calledRetryHandler
+    })
+    .execute()
+    .then(function () {
+      test.fail('Expected validation to fail!')
+    })
+    .fail(function () {
+      test.equal(calledRetryHandler, 1)
+    })
+})

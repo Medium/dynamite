@@ -43,7 +43,7 @@ Options can also optionally take a hash with a key `dbClient` which points to an
 
 * `sslEnabled`: a boolean to turn ssl on or off for the connection.
 * `endPoint`: the address of the DynamoDB instance to try to communicate with.
-* `retryHandler`: a `function(method, table)` that will be triggered if Dynamite needs to retry a command.
+* `retryHandler`: a `function(method, table, response)` that will be triggered if Dynamite needs to retry a command.
 
 ### Foreword: Kew and You
 
