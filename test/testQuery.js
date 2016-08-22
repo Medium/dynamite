@@ -346,7 +346,7 @@ builder.add(function testValidationError(test) {
     })
 })
 
-builder.add(function testDisableRetries(test) {
+builder.add(function testRetryHandler(test) {
   var client = this.client
   var calledRetryHandler = 0
 
