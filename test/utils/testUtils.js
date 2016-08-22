@@ -23,8 +23,8 @@ var options = {
   accessKeyId: 'xxx',
   secretAccessKey: 'xxx',
   region: 'xxx',
-  retryHandler: function (method, table) {
-    console.log('retrying', method, table)
+  retryHandler: function (method, table, response) {
+    console.log('retrying', method, table, response)
   }
 }
 
