@@ -212,3 +212,27 @@ builder.add(function testPutWithFailedAbsentConditionalExists(test) {
   })
   .fail(this.client.throwUnlessConditionalError)
 })
+
+// trigger a conditional error and check its content
+builder.add(function testConditionalErrorFormat(test) {
+  var conditions = this.client.newConditionBuilder()
+    .expectAttributeAbsent('age')
+
+  return this.client.putItem("user", {
+    userId: 'userA',
+    column: '@',
+    height: 72
+  })
+  .withCondition(conditions)
+  .execute()
+  .then(function () {
+    test.fail('This putItem request should fail due to a conditional error')
+  })
+  .fail(function (err) {
+    test.ok(err instanceof errors.ConditionalError)
+    test.equals('The conditional request failed', err.message, 'The "message" field should be the custom message')
+    test.equals('The conditional request failed', err.details, 'The "details" field should be the custom message')
+    test.equals('user', err.table, 'The "table" field should be the right table name')
+    test.ok(!!err.requestId, 'The "requestId" field should exist')
+  })
+})
