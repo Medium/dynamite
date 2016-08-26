@@ -56,6 +56,15 @@ builder.add(function testBasicQuery(test) {
     .then(checkResults(test, 6, 0))
 })
 
+// test basic query with an empty filter
+builder.add(function testBasicQueryEmptyFilter(test) {
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .withFilter(this.client.newConditionBuilder())
+    .execute()
+    .then(checkResults(test, 6, 0))
+})
+
 // test Index key begins with
 builder.add(function testindexBeginsWith(test) {
   return this.client.newQueryBuilder('comments')
