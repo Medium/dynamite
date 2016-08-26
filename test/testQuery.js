@@ -379,3 +379,50 @@ builder.add(function testKeyConditionExpression(test) {
   test.equal('begins_with(#comment, :VC1XcommentX0)', data.KeyConditionExpression)
   test.done()
 })
+
+
+builder.add(function testOrConditionExpression(test) {
+  var filter1 = this.client.newConditionBuilder()
+      .filterAttributeBeginsWith("comment", "HEY")
+  var filter2 = this.client.newConditionBuilder()
+      .filterAttributeBeginsWith("comment", "what")
+
+
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBeginsWith('column', '/comment/')
+    .withFilter(this.client.orConditions([filter1, filter2]))
+    .execute()
+    .then(checkResults(test, 2, 1))
+})
+
+
+builder.add(function testAndConditionExpression(test) {
+  var filter1 = this.client.newConditionBuilder()
+      .filterAttributeBeginsWith("comment", "HEY")
+  var filter2 = this.client.newConditionBuilder()
+      .filterAttributeEquals("comment", "HEYYOOOOO")
+
+
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBeginsWith('column', '/comment/')
+    .withFilter(this.client.andConditions([filter1, filter2]))
+    .execute()
+    .then(checkResults(test, 1, 1))
+})
+
+
+
+builder.add(function testNotConditionExpression(test) {
+  var filter1 = this.client.newConditionBuilder()
+      .filterAttributeBeginsWith("comment", "HEY")
+
+
+  return this.client.newQueryBuilder('comments')
+    .setHashKey('postId', 'post1')
+    .indexBeginsWith('column', '/comment/')
+    .withFilter(this.client.notCondition(filter1))
+    .execute()
+    .then(checkResults(test, 3, 2))
+})
