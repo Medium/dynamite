@@ -110,3 +110,20 @@ builder.add(function testBatchGetMucho(test) {
       test.equal(0, Object.keys(data.UnprocessedKeys), 'There should be no unprocessed keys')
     })
 })
+
+builder.add(function testBatchGetBadKey(test) {
+  var client = this.client
+  return Q.fcall(
+    function () {
+      return client.newBatchGetBuilder()
+        .setPrefix('pre_')
+        .requestItems('many', manyData.map(function () { return {'hashKey': {}, 'column': '@'}}))
+        .execute()
+    })
+    .then(function () {
+        test.fail('Expected error')
+    })
+    .fail(function (err) {
+      if (err.message != 'Invalid dynamo value. Type: object, Value: [object Object]') throw err
+    })
+})
