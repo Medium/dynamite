@@ -384,8 +384,8 @@ builder.add(function testKeyConditionExpression(test) {
   ConditionBuilder.populateExpressionField(
       data, 'KeyConditionExpression', [filter], {})
   test.equal('{"#comment":"comment"}', JSON.stringify(data.ExpressionAttributeNames))
-  test.equal('{":VC1XcommentX0":{"S":"HEY"}}', JSON.stringify(data.ExpressionAttributeValues))
-  test.equal('begins_with(#comment, :VC1XcommentX0)', data.KeyConditionExpression)
+  test.equal('{":VC2":{"S":"HEY"}}', JSON.stringify(data.ExpressionAttributeValues))
+  test.equal('begins_with(#comment, :VC2)', data.KeyConditionExpression)
   test.done()
 })
 
