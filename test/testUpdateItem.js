@@ -413,3 +413,24 @@ builder.add(function testUpdateFailsWhenConditionalArgumentBad(test) {
   }
   test.done()
 })
+
+builder.add(function testPutAttributeWithUnderscores(test) {
+  var self = this
+
+  return this.client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .enableUpsert()
+    .putAttribute('__age', 30)
+    .putAttribute('00height', 72)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.__age, 30, 'result __age should be 30')
+      test.equal(data.result['00height'], 72, 'result 00height should be 72')
+      return utils.getItemWithSDK(self.db, "userA", "@")
+    })
+    .then(function (data) {
+      test.equal(data['Item']['__age'].N, "30", "result age should be 30")
+      test.equal(data['Item']['00height'].N, "72", "height should be 72")
+    })
+})
