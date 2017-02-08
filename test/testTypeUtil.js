@@ -65,3 +65,14 @@ builder.add(function testObjectIsNonEmptySet(test) {
 
   return Q.resolve()
 })
+
+builder.add(function testGetAttributeAlias(test) {
+  var getAlias = typeUtil.getAttributeAlias
+  test.equal('userId', getAlias('userId'))
+  test.equal('userId2', getAlias('userId2'))
+  test.equal('#comment', getAlias('comment')) // reserved word
+  test.equal('#5f5f757365724964', getAlias('__userId'))
+  test.equal('#7573657249645f', getAlias('userId_'))
+  test.equal('#30757365724964', getAlias('0userId'))
+  return Q.resolve()
+})
