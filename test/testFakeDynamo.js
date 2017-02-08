@@ -740,3 +740,38 @@ builder.add(function testQueryFilterIn(test) {
       }).sort())
     })
 })
+
+builder.add(function testAbsentConditionUpdateSuccess(test) {
+  var conditions = client.newConditionBuilder()
+       .expectAttributeAbsent('userId')
+
+  return client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userNew')
+    .setRangeKey('column', '@')
+    .withCondition(conditions)
+    .execute()
+    .then(function () {
+      return client.getItem('user')
+        .setHashKey('userId', 'userNew')
+        .setRangeKey('column', '@')
+        .execute()
+    })
+    .then(function (data) {
+      test.deepEqual({userId: 'userNew', column: '@'}, data.result)
+    })
+})
+
+builder.add(function testAbsentConditionUpdateFail(test) {
+  var conditions = client.newConditionBuilder()
+       .expectAttributeAbsent('userId')
+
+  return client.newUpdateBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setRangeKey('column', '@')
+    .withCondition(conditions)
+    .execute()
+    .then(function () {
+      test.fail('Expected error')
+    })
+    .fail(client.throwUnlessConditionalError)
+})
