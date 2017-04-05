@@ -1,7 +1,7 @@
 {
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "homepage": "https://github.com/Medium/dynamite",
   "license": "Apache-2.0",
   "authors": [
@@ -9,7 +9,8 @@
     "Jean Hsu <jean@medium.com> (https://github.com/jyhsu)",
     "Jonathan Fuchs <jon@medium.com> (https://github.com/jfuchs)",
     "Artem Titoulenko <artem.titoulenko@gmail.com> (https://github.com/ArtemTitoulenko)",
-    "Xiao Ma <xiao@medium.com> (https://github.com/x-ma)"
+    "Xiao Ma <xiao@medium.com> (https://github.com/x-ma)",
+    "Jamie Talbot <jamie@medium.com> (https://github.com/majelbstoat)"
   ],
   "keywords": [
     "dynamite",
