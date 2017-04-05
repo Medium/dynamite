@@ -20,7 +20,7 @@ exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
   utils.ensureLocalDynamo()
-  utils.createTable(this.db, tableName, "userId", "column")
+  utils.createTable(this.db, tableName, "userId", "column", [{hashKey: "post", hashKeyType: "N"}, {hashKey: "post", hashKeyType: "N", rangeKey: "email"}, {hashKey: "description"}])
     .thenBound(utils.initTable, null, {"db": this.db, "tableName": tableName, "data": rawData})
     .fail(onError)
     .fin(done)
@@ -42,10 +42,10 @@ exports.tearDown = function (done) {
 var scanAndCheck = function (scan, expect, test) {
   return scan.execute()
     .then(function (data) {
-      test.equal(data.result.length, expect.length, expect.length + " records should be returned")
+      test.equal(data.result.length, expect.length, expect.length + " records should be returned, got " + data.result.length)
       data.result.sort(function(a, b) {return (a.userId < b.userId) ? -1 : ((a.userId > b.userId) ? 1 : 0)})
       for (var i = 0; i < data.result.length; i++) {
-        test.deepEqual(data.result[i], rawData[expect[i]], "Some records are wrong")
+        test.deepEqual(data.result[i], rawData[expect[i]])
       }
     })
 }
@@ -60,6 +60,29 @@ builder.add(function testScanSegment(test) {
   var scan = this.client.newScanBuilder(tableName)
                .setParallelScan(0, 2)
   return scanAndCheck(scan, [1, 3, 4], test)
+})
+
+builder.add(function testScanOnGlobalSecondaryIndex(test) {
+  var scan = this.client.newScanBuilder(tableName)
+               .setIndexNameGenerator(utils.indexNameGenerator)
+               .setHashKey('post')
+               .setRangeKey('email')
+  return scanAndCheck(scan, [0, 2, 5], test)
+})
+
+builder.add(function testScanOnGlobalSecondaryIndexWithoutRangeKey(test) {
+  var scan = this.client.newScanBuilder(tableName)
+               .setIndexNameGenerator(utils.indexNameGenerator)
+               .setHashKey('description')
+  return scanAndCheck(scan, [5], test)
+})
+
+builder.add(function testParallelScanOnGlobalSecondaryIndex(test) {
+  var scan = this.client.newScanBuilder(tableName)
+               .setIndexNameGenerator(utils.indexNameGenerator)
+               .setHashKey('post')
+               .setParallelScan(1, 2)
+  return scanAndCheck(scan, [0, 2, 5, 6], test)
 })
 
 // test filtering with post == 2
