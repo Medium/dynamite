@@ -75,12 +75,24 @@ utils.deleteTable = function (db, tableName) {
 }
 
 /*
+ * A helper to generate an index name for testing indices.
+ *
+ * @param hashKey {string}
+ * @param rangeKey {string}
+ */
+utils.indexNameGenerator = function (hashKey, rangeKey) {
+  var name = 'index-' + hashKey
+  if (rangeKey) name = name + '-' + rangeKey
+  return  name
+}
+
+/*
  * A helper function that creates the testing table.
  *
  * @param db {AWS.DynamoDB} The database instance.
  * @return {Promise}
  */
-utils.createTable = function (db, tableName, hashKey, rangeKey) {
+utils.createTable = function (db, tableName, hashKey, rangeKey, gsiDefinitions) {
   var defer = Q.defer()
   var opts = {}
   if (apiVersion === AWSName.API_VERSION_2011) {
@@ -98,11 +110,11 @@ utils.createTable = function (db, tableName, hashKey, rangeKey) {
 
     db.createTable(opts, defer.makeNodeResolver())
   } else if (apiVersion === AWSName.API_VERSION_2012) {
+    var attributeDefinitions = {}
+    attributeDefinitions[hashKey] = "S"
     opts = {
       TableName: tableName,
-      AttributeDefinitions: [
-        {AttributeName: hashKey, AttributeType: "S"}
-      ],
+      AttributeDefinitions: [],
       KeySchema: [
         {AttributeName: hashKey, KeyType: "HASH"}
       ],
@@ -110,14 +122,40 @@ utils.createTable = function (db, tableName, hashKey, rangeKey) {
     }
 
     if (rangeKey) {
-      opts.AttributeDefinitions.push({
-        AttributeName: rangeKey,
-        AttributeType: "S"
-      })
+      attributeDefinitions[rangeKey] = "S"
       opts.KeySchema.push({
         AttributeName: rangeKey,
         KeyType: "RANGE"
       })
+    }
+
+    if (gsiDefinitions) {
+      opts.GlobalSecondaryIndexes = gsiDefinitions.map(function (index) {
+
+        var keySchema = [
+          {AttributeName: index.hashKey, KeyType: "HASH"}
+        ]
+        var hashKeyType = index.hashKeyType || "S"
+        attributeDefinitions[index.hashKey] = hashKeyType
+
+        if (index.rangeKey) {
+          var rangeKeyType = index.rangeKeyType || "S"
+          keySchema.push({AttributeName: index.rangeKey, KeyType: "RANGE"})
+          attributeDefinitions[index.rangeKey] = rangeKeyType
+        }
+        return {
+          IndexName: utils.indexNameGenerator(index.hashKey, index.rangeKey),
+          KeySchema: keySchema,
+          Projection: {
+            ProjectionType: "ALL"
+          },
+          ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
+        }
+      })
+    }
+
+    for (var field in attributeDefinitions) {
+      opts.AttributeDefinitions.push({AttributeName: field, AttributeType: attributeDefinitions[field]})
     }
 
     db.createTable(opts, defer.makeNodeResolver())

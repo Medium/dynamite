@@ -20,7 +20,7 @@ exports.setUp = function (done) {
   this.db = utils.getMockDatabase()
   this.client = utils.getMockDatabaseClient()
   utils.ensureLocalDynamo()
-  utils.createTable(this.db, tableName, "userId", "column")
+  utils.createTable(this.db, tableName, "userId", "column", [{hashKey: "post", hashKeyType: "N", rangeKey: "email"}, {hashKey: "description"}])
     .thenBound(utils.initTable, null, {"db": this.db, "tableName": tableName, "data": rawData})
     .fail(onError)
     .fin(done)
@@ -60,6 +60,21 @@ builder.add(function testScanSegment(test) {
   var scan = this.client.newScanBuilder(tableName)
                .setParallelScan(0, 2)
   return scanAndCheck(scan, [1, 3, 4], test)
+})
+
+builder.add(function testScanOnGlobalSecondaryIndex(test) {
+  var scan = this.client.newScanBuilder(tableName)
+               .setIndexNameGenerator(utils.indexNameGenerator)
+               .setHashKey('post')
+               .setRangeKey('email')
+  return scanAndCheck(scan, [0, 2, 5], test)
+})
+
+builder.add(function testScanOnGlobalSecondaryIndexWithoutRangeKey(test) {
+  var scan = this.client.newScanBuilder(tableName)
+               .setIndexNameGenerator(utils.indexNameGenerator)
+               .setHashKey('description')
+  return scanAndCheck(scan, [5], test)
 })
 
 // test filtering with post == 2
