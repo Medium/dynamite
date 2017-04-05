@@ -83,7 +83,7 @@ utils.deleteTable = function (db, tableName) {
 utils.indexNameGenerator = function (hashKey, rangeKey) {
   var name = 'index-' + hashKey
   if (rangeKey) name = name + '-' + rangeKey
-  return  name
+  return name
 }
 
 /*
