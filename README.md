@@ -19,15 +19,17 @@ The tests will be run against a `LocalDynamo` service. Currently, there is no wa
 
 ## Creating a Client
 
-	var Dynamite = require('dynamite')
+```js
+var Dynamite = require('dynamite')
 
-	var options = {
-		  region: 'us-east-1'
-		, accessKeyId: 'xxx'
-		, secretAccessKey: 'xxx'
-		}
+var options = {
+  region: 'us-east-1',
+  accessKeyId: 'xxx',
+  secretAccessKey: 'xxx'
+}
 
-	var client = new Dynamite.Client(options)
+var client = new Dynamite.Client(options)
+```
 
 Options requires all of:
 
@@ -49,17 +51,19 @@ Options can also optionally take a hash with a key `dbClient` which points to an
 
 All functions return [Kew](https://github.com/Medium/kew) promises on `execute()`. These functions will all then take the form:
 
-	client.fn(params)
-		.execute()
-		.then(function(){
-			// handle success
-		})
-		.fail(function(e) {
-			// handle failure
-		})
-		.fin(function() {
-			// when all is said and done
-		})
+```js
+client.fn(params)
+  .execute()
+  .then(function(){
+    // handle success
+  })
+  .fail(function(e) {
+    // handle failure
+  })
+  .fin(function() {
+    // when all is said and done
+  })
+```
 
 Therefore, these docs will focus more on function signatures and assume that the developer using those functions will comply with the Kew API in turn.
 
@@ -74,7 +78,9 @@ Table creation is part of the database's concerns and thus doesn't have its own 
 
 Tables can have descriptions. Retrieve them with:
 
-	client.describeTable('table-name')
+```js
+client.describeTable('table-name')
+```
 
 ## Conditions
 
@@ -82,69 +88,81 @@ Conditions ensure that certain properties of the item are either absent or equal
 
 Adding conditions to an operation is fairly trivial:
 
-    var conditions = client.newConditionBuilder()
-        .expectAttributeEquals('age', 29)
+```js
+var conditions = client.newConditionBuilder()
+  .expectAttributeEquals('age', 29)
 
-    client.fn('some-table')
-        .withCondition(conditions)
-        .execute()
-        .then(function () {
-            // handle the operation output
-        })
+client.fn('some-table')
+  .withCondition(conditions)
+  .execute()
+  .then(function () {
+    // handle the operation output
+  })
+```
 
 There is also a helper method for building conditions from a JSON object.
 
-    var conditions = client.conditions({age: 29})
-    client.fn('some-table')
-        .withCondition(conditions)
-        .execute()
+```js
+var conditions = client.conditions({age: 29})
+client.fn('some-table')
+  .withCondition(conditions)
+  .execute()
+```
 
 If a condition fails, the promise will be rejected with a conditional error,
 which you can detect with the `isConditionalError` method
 
-    client.fn('some-table')
-        .withCondition(client.conditions({age: 29})
-        .execute()
-        .fail(function (e) {
-          if (!client.isConditionalError(e)) {
-            throw new Error('Unexpected age; conditional check failed')
-          } else {
-            throw e
-          }
-        })
+```js
+client.fn('some-table')
+  .withCondition(client.conditions({age: 29})
+  .execute()
+  .fail(function (e) {
+    if (!client.isConditionalError(e)) {
+      throw new Error('Unexpected age; conditional check failed')
+    } else {
+      throw e
+    }
+  })
+```
 
 Catching all conditional errors is a common idiom, so there is a
 `throwUnlessConditionalError` helper method for this case.
 
-    client.fn('some-table')
-        .withCondition(client.conditions({age: 29})
-        .execute()
-        .fail(client.throwUnlessConditionalError)
+```js
+client.fn('some-table')
+  .withCondition(client.conditions({age: 29})
+  .execute()
+  .fail(client.throwUnlessConditionalError)
+```
 
 ## Getting an Item From a Table
 
-	client.getItem('user-table')
-	    .setHashKey('userId', 'userA')
-	    .setRangeKey('column', '@')
-		.execute()
-		.then(function(data) {
-			// data.result: the resulting object
-		})
+```js
+client.getItem('user-table')
+  .setHashKey('userId', 'userA')
+  .setRangeKey('column', '@')
+  .execute()
+  .then(function(data) {
+    // data.result: the resulting object
+  })
+```
 
 If an item does not exist, `data.result` will be `undefined`.
 
 ### Getting Select Attributes
 
-	client.getItem('user-table')
-		.setHashKey('userId', 'userA')
-	    .setRangeKey('column', '@')
-	    .selectAttributes(['userId', 'column'])
-		.execute()
-		.then(function(data) {
-			// data.result: the resulting object
-			//              only the attributes passed into selectAttributes()
-			//              appear as keys in data.result
-		})
+```js
+client.getItem('user-table')
+  .setHashKey('userId', 'userA')
+  .setRangeKey('column', '@')
+  .selectAttributes(['userId', 'column'])
+  .execute()
+  .then(function(data) {
+    // data.result: the resulting object
+    //              only the attributes passed into selectAttributes()
+    //              appear as keys in data.result
+  })
+```
 
 
 
@@ -153,10 +171,12 @@ If an item does not exist, `data.result` will be `undefined`.
 The batch get API allows you to request multiple items with specific primary keys, from different
 tables, in a single fetch.
 
-    client.newBatchGetBuilder()
-        .requestItems('user', [{'userId': 'userA', 'column': '@'}, {'userId': 'userB', 'column': '@'}])
-        .requestItems('phones', [{'userId': 'userA', 'column': 'phone1'}, {'userId': 'userB', 'column': 'phone1'}])
-        .execute()
+```js
+client.newBatchGetBuilder()
+  .requestItems('user', [{'userId': 'userA', 'column': '@'}, {'userId': 'userB', 'column': '@'}])
+  .requestItems('phones', [{'userId': 'userA', 'column': 'phone1'}, {'userId': 'userB', 'column': 'phone1'}])
+  .execute()
+```
 
 `requestItems` can be called multiple times, with a table name and an array of objects representing
 primary keys, in the form `{hashKey: 123, rangeKey: 456}`.
@@ -167,26 +187,30 @@ primary keys, in the form `{hashKey: 123, rangeKey: 456}`.
 
 Items are handled as JavaScript Objects by the client. These are then converted into an AWS specific format and sent off. The only accepted types of data that can be stored in DynamoDB are Strings, Numbers, and Sets (Arrays). Sets can contain either only Numbers or Strings.
 
-	client.putItem('user-table', {
-		userId: 'userA'
-	  , column: '@'
-	  , age: 30
-	  , company: 'Medium'
-	  , nickNames: ['Ev', 'Evan']
-	  , postIds: [1, 2, 3]
-	})
+```js
+client.putItem('user-table', {
+  userId: 'userA',
+  column: '@',
+  age: 30,
+  company: 'Medium',
+  nickNames: ['Ev', 'Evan'],
+  postIds: [1, 2, 3]
+})
+```
 
 ### Overrides
 
 If an item with the same hash and range keys as the one that is being inserted, the old item will be replaced with the item that is being put in its place.
 
-    // initialData = [{userId: 'userA', column: '@', age: 27]
+```js
+// initialData = [{userId: 'userA', column: '@', age: 27]
 
-    client.putItem('user-table', {
-		userId: 'userA'
-	  , column: '@'
-	  , height: 72
-	})
+client.putItem('user-table', {
+  userId: 'userA',
+  column: '@',
+  height: 72
+})
+```
 
 If the item above were to be retrieved from the table `user-table`, then age would be undefined and a new key `height` would be available.
 
@@ -205,13 +229,15 @@ The item will only be replaced if the field `field` is not set in the item in th
 
 If the hash key and range key match an item, it will be deleted. Upon success, the function returns the previous attributes and values of the deleted item.
 
-    client.deleteItem('user-table')
-        .setHashKey('userId', 'userA')
-        .setRangeKey('column', '@')
-        .execute()
-        .then(function (data) {
-            // data.result will contain the origin item attributes and their corresponding values
-        })
+```js
+client.deleteItem('user-table')
+  .setHashKey('userId', 'userA')
+  .setRangeKey('column', '@')
+  .execute()
+  .then(function (data) {
+    // data.result will contain the origin item attributes and their corresponding values
+  })
+```
 
 ### Conditional Deletes
 
@@ -234,20 +260,22 @@ If a value is updated on an attribute that does not exist, the attribute will be
 
 Putting empty attributes causes the whole update query to fail.
 
-    // initialData = [{userId: 'userA', column: '@', age: 27, weight: 180]
+```js
+// initialData = [{userId: 'userA', column: '@', age: 27, weight: 180]
 
-    client.newUpdateBuilder('user-table')
-        .setHashKey('userId', 'userA')
-        .setRangeKey('column', '@')
-        .enableUpsert()
-        .putAttribute('age', 30)
-        .addToAttribute('age', 1)
-        .deleteAttribute('weight')
-        .putAttribute('height', 72)
-        .execute()
-        .then(function (data) {
-            // data.result == {userId: 'userA', column: '@', age: 31, height: 72}
-        })
+client.newUpdateBuilder('user-table')
+  .setHashKey('userId', 'userA')
+  .setRangeKey('column', '@')
+  .enableUpsert()
+  .putAttribute('age', 30)
+  .addToAttribute('age', 1)
+  .deleteAttribute('weight')
+  .putAttribute('height', 72)
+  .execute()
+  .then(function (data) {
+    // data.result == {userId: 'userA', column: '@', age: 31, height: 72}
+  })
+```
 
 #### Conditional Updates
 
@@ -277,23 +305,27 @@ A Query operation seeks the specified composite primary key, or range of keys, u
 
 Our initial data set:
 
-    [
-      {"postId": "post1", "column": "@", "title": "This is my post", "content": "And here is some content!", "tags": ['foo', 'bar']},
-      {"postId": "post1", "column": "/comment/timestamp/002123", "comment": "this is slightly later"},
-      {"postId": "post1", "column": "/comment/timestamp/010000", "comment": "where am I?"},
-      {"postId": "post1", "column": "/comment/timestamp/001111", "comment": "HEYYOOOOO"},
-      {"postId": "post1", "column": "/comment/timestamp/001112", "comment": "what's up?"},
-      {"postId": "post1", "column": "/canEdit/user/AAA", "userId": "AAA"}
-    ]
+```js
+[
+  {"postId": "post1", "column": "@", "title": "This is my post", "content": "And here is some content!", "tags": ['foo', 'bar']},
+  {"postId": "post1", "column": "/comment/timestamp/002123", "comment": "this is slightly later"},
+  {"postId": "post1", "column": "/comment/timestamp/010000", "comment": "where am I?"},
+  {"postId": "post1", "column": "/comment/timestamp/001111", "comment": "HEYYOOOOO"},
+  {"postId": "post1", "column": "/comment/timestamp/001112", "comment": "what's up?"},
+  {"postId": "post1", "column": "/canEdit/user/AAA", "userId": "AAA"}
+]
+```
 
 Querying all items whose postId is `post1`:
 
-    client.newQueryBuilder('comments-table')
-        .setHashKey('postId', 'post1')
-        .execute()
-        .then(function (data) {
-            // data.result is an array of posts whose hash key is `post1`
-        })
+```js
+client.newQueryBuilder('comments-table')
+  .setHashKey('postId', 'post1')
+  .execute()
+  .then(function (data) {
+    // data.result is an array of posts whose hash key is `post1`
+  })
+```
 
 The result of the query will be a DynamoResult object with a `result` property for the result set.
 
@@ -313,9 +345,11 @@ There are also a variety of methods that refine and restrict the returned set of
 
 Get the count of the number of items, not the actual items themselves.
 
-    client.newQueryBuilder('comments-table')
-        .setHashKey('postId', 'post1')
-        .getCount()
+```js
+client.newQueryBuilder('comments-table')
+  .setHashKey('postId', 'post1')
+  .getCount()
+```
 
 #### scanForward()
 
@@ -341,9 +375,11 @@ Return at most `max` items. Note that if the response will be larger than 1mb, t
 
 Return only items where the range key begins with `key_part`. For instance, retrieve all comments for posts with a, in our case unique, hash key of `post1`.
 
-    client.newQueryBuilder('comments-table')
-        .setHashKey('postId', 'post1')
-        .indexBeginsWith('column', '/comment/')
+```js
+client.newQueryBuilder('comments-table')
+  .setHashKey('postId', 'post1')
+  .indexBeginsWith('column', '/comment/')
+```
 
 #### indexBetween(range_key, key_part_start, key_part_end)
 
@@ -351,9 +387,11 @@ Return only items whose range key is "between" the start and end keys. The range
 
 Retrieve all comments for posts with the hash key `post1` up until the `009999` timestamp:
 
-    client.newQueryBuilder('comments-table')
-        .setHashKey('postId', 'post1')
-        .indexBetween('column', '/comment/', '/comment/timestamp/009999')
+```js
+client.newQueryBuilder('comments-table')
+  .setHashKey('postId', 'post1')
+  .indexBetween('column', '/comment/', '/comment/timestamp/009999')
+```
 
 #### indexLessThan(range_key, value)
 #### indexLessThanEqual(range_key, value)
@@ -379,23 +417,27 @@ Scan supports a specific set of comparison operators. For information about each
 
 Our initial data set:
 
-    [
-      {"userId": "c", "column": "@", "post": "3", "email": "1@medium.com"},
-      {"userId": "b", "column": "@", "post": "0", "address": "800 Market St. SF, CA"},
-      {"userId": "a", "column": "@", "post": "5", "email": "3@medium"},
-      {"userId": "d", "column": "@", "post": "2", "twitter": "haha"},
-      {"userId": "e", "column": "@", "post": "2", "twitter": "hoho"},
-      {"userId": "f", "column": "@", "post": "4", "description": "Designer", "email": "h@w.com"},
-      {"userId": "h", "column": "@", "post": "6", "tags": ['foo', 'bar']}
-    ]
+```js
+[
+  {"userId": "c", "column": "@", "post": "3", "email": "1@medium.com"},
+  {"userId": "b", "column": "@", "post": "0", "address": "800 Market St. SF, CA"},
+  {"userId": "a", "column": "@", "post": "5", "email": "3@medium"},
+  {"userId": "d", "column": "@", "post": "2", "twitter": "haha"},
+  {"userId": "e", "column": "@", "post": "2", "twitter": "hoho"},
+  {"userId": "f", "column": "@", "post": "4", "description": "Designer", "email": "h@w.com"},
+  {"userId": "h", "column": "@", "post": "6", "tags": ['foo', 'bar']}
+]
+```
 
 A simple scan looks like this:
 
-    client.newScanBuilder('user-table')
-        .execute()
-        .then(function (data) {
-            // data.result contains all of the users
-        })
+```js
+client.newScanBuilder('user-table')
+  .execute()
+  .then(function (data) {
+    // data.result contains all of the users
+  })
+```
 
 If your dataset contains more than 1 MB of data, the `data` that is returned will contain a `LastEvaluatedKey` key that will tell you what the last evaluated key for the scan was, so you can start the next `scan` there by passing the `LastEvaluatedKey` to `setStartKey(key)`.
 
@@ -403,12 +445,14 @@ If your dataset contains more than 1 MB of data, the `data` that is returned wil
 
 Include items whose `field` equals `value`.
 
-    client.newScanBuilder('user-table')
-        .filterAttributeEquals('twitter', 'haha')
-        .execute()
-        .then(function (data) {
-            // data.result #=> [{"userId": "d", "column": "@", "post": "2", "twitter": "haha"}]
-        })
+```js
+client.newScanBuilder('user-table')
+  .filterAttributeEquals('twitter', 'haha')
+  .execute()
+  .then(function (data) {
+    // data.result #=> [{"userId": "d", "column": "@", "post": "2", "twitter": "haha"}]
+  })
+```
 
 The other `filterAttribute*` functions are used in the exact same way.
 
