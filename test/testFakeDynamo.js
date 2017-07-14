@@ -143,6 +143,53 @@ builder.add(function testScan(test) {
       })
 })
 
+builder.add(function testScanWithSimpleFilter(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '1', age: 27, name: 'Ringo'},
+        2: {userId: 'userA', column: '4', age: 28, name: 'George'},
+        3: {userId: 'userA', column: '3', age: 29, name: 'John'},
+        4: {userId: 'userA', column: '2', age: 30, name: 'Paul'}
+    }
+  })
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeBeginsWith('name', 'Geo')
+
+  return client.newScanBuilder('user')
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.length, 1)
+      test.deepEqual(data.result[0], {userId: 'userA', column: '4', age: 28, name: 'George'})
+    })
+})
+
+builder.add(function testScanWithComplexFilter(test) {
+  db.getTable('user').setData({
+    'userA': {
+        1: {userId: 'userA', column: '1', age: 27, name: 'Ringo'},
+        2: {userId: 'userA', column: '4', age: 28, name: 'George'},
+        3: {userId: 'userA', column: '3', age: 29, name: 'John'},
+        4: {userId: 'userA', column: '2', age: 30, name: 'Paul'}
+    }
+  })
+
+  var filter = client.andConditions([
+    client.newConditionBuilder().filterAttributeGreaterThan('age', 27),
+    client.newConditionBuilder().filterAttributeLessThan('age', 30)
+  ])
+
+  return client.newScanBuilder('user')
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.length, 2)
+      test.deepEqual(data.result[0], {userId: 'userA', column: '4', age: 28, name: 'George'})
+      test.deepEqual(data.result[1], {userId: 'userA', column: '3', age: 29, name: 'John'})
+    })
+})
+
 builder.add(function testScanWithLimit(test) {
   db.getTable('user').setData({
     'userA': {
