@@ -17,11 +17,16 @@ exports.setUp = function (done) {
   db = new FakeDynamo()
   client = new Client({dbClient: db})
 
-  var table = db.createTable('user')
-  table.setHashKey('userId', 'S')
-  table.setRangeKey('column', 'S')
-  table.setData(
+  var userTable = db.createTable('user')
+  userTable.setHashKey('userId', 'S')
+  userTable.setRangeKey('column', 'S')
+  userTable.setData(
     JSON.parse(JSON.stringify({userA: {'@': userA}})))
+
+  var cookieTable = db.createTable('cookie')
+  cookieTable.setHashKey('cookieId', 'S')
+  cookieTable.setRangeKey('createdAt', 'S')
+
   done()
 }
 
@@ -340,6 +345,19 @@ builder.add(function testQueryOnSecondaryIndexEquals(test) {
 
 // test querying secondary index using equals condition
 builder.add(function testQueryOnGlobalSecondaryIndexEquals(test) {
+  db.getTable('user').setGsiDefinitions([
+    {
+      hash: {
+        name: 'age',
+        type: 'S'
+      },
+      range: {
+        name: 'userId',
+        type: 'S'
+      }
+    }
+  ])
+
   db.getTable('user').setData({
     'userA': {
         1: {userId: 'userA', column: 3, age: 27},
@@ -398,6 +416,19 @@ builder.add(function testQueryOnMultipleIndexes(test) {
  * Does not currently support testing for existence of GSIs
  */
 builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
+  db.getTable('user').setGsiDefinitions([
+    {
+      hash: {
+        name: 'age',
+        type: 'S'
+      },
+      range: {
+        name: 'height',
+        type: 'N'
+      }
+    }
+  ])
+
   db.getTable('user').setHashKey('userId', 'S')
     .setData({
     'userA': {
@@ -675,6 +706,108 @@ builder.add(function testBooleanQueryFilter(test) {
       test.equal(data.result.length, 2)
       test.deepEqual(data.result[0], {userId: 'userA', column: '1', age: 27, isHappy: true})
       test.deepEqual(data.result[1], {userId: 'userA', column: '3', age: 29, isHappy: true})
+    })
+})
+
+builder.add(function testQueryFilterWithPartitionKeyThrowsError(test) {
+  var filter = client.newConditionBuilder()
+    .filterAttributeNotEquals('userId', 'Me')
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 28)
+    .withFilter(filter)
+    .execute()
+    .then(function () {
+      test.fail('Expected validation exception')
+    })
+    .fail(function (e) {
+      if (!client.isValidationError(e)) throw e
+    })
+})
+
+builder.add(function testQueryFilterWithIndexKeyThrowsError(test) {
+  var filter = client.newConditionBuilder()
+    .filterAttributeNotEquals('age', 1)
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    .setIndexName('age-index')
+    .indexGreaterThan('age', 15)
+    .withFilter(filter)
+    .execute()
+    .then(function () {
+      test.fail('Expected validation exception')
+    })
+    .fail(function (e) {
+      if (!client.isValidationError(e)) throw e
+    })
+})
+
+builder.add(function testQueryFilterWithRangeKeyThrowsError(test) {
+  var filter = client.newConditionBuilder()
+    .filterAttributeLessThan('createdAt', 30)
+
+  return client.newQueryBuilder('cookie')
+    .setHashKey('cookieId', 'CookieA')
+    .indexGreaterThan('createdAt', 15)
+    .withFilter(filter)
+    .execute()
+    .then(function () {
+      test.fail('Expected validation exception')
+    })
+    .fail(function (e) {
+      if (!client.isValidationError(e)) throw e
+    })
+})
+
+builder.add(function testQueryFilterOnGsiIndexThrowsError(test) {
+  db.getTable('cookie').setGsiDefinitions([
+    {
+      hash: {
+        name: 'cookieType',
+        type: 'S'
+      },
+      range: {
+        name: 'orderedAt',
+        type: 'N'
+      }
+    }
+  ])
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeLessThan('orderedAt', 30)
+
+  return client.newQueryBuilder('cookie')
+    .setHashKey('cookieType', 'Oreo')
+    .setIndexName('cookieType-orderedAt-gsi')
+    .indexGreaterThanEqual('orderedAt', 28)
+    .withFilter(filter)
+    .execute()
+    .then(function () {
+      test.fail('Expected validation exception')
+    })
+    .fail(function (e) {
+      if (!client.isValidationError(e)) throw e
+    })
+})
+
+builder.add(function testQueryFilterWithRangeWithIndexDoesNotThrowsError(test) {
+  var filter = client.newConditionBuilder()
+    .filterAttributeLessThan('createdAt', 30)
+
+  return client.newQueryBuilder('cookie')
+    .setHashKey('cookieId', 'CookieA')
+    .setIndexName('age-index')
+    .indexGreaterThanEqual('age', 28)
+    .withFilter(filter)
+    .execute()
+    .then(function () {
+      test.ok(true)
+    })
+    .fail(function () {
+      test.fail('Expected not to fail')
     })
 })
 
