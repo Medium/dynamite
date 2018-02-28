@@ -793,6 +793,41 @@ builder.add(function testQueryFilterOnGsiIndexThrowsError(test) {
     })
 })
 
+builder.add(function testQueryFilterOnGsiWithNoRangeWorks(test) {
+  db.getTable('cookie').setGsiDefinitions([
+    {
+      hash: {
+        name: 'cookieType',
+        type: 'S'
+      }
+    }
+  ])
+
+  db.getTable('cookie').setData({
+    'cookieA': {
+        1: {cookieId: 'cookieA', column: '1', createdAt: 1, orderedAt: 27, cookieType: 'Oreo'},
+        2: {cookieId: 'cookieA', column: '2', createdAt: 2, orderedAt: 29, cookieType: 'Oreo'}
+    },
+    'cookieB': {
+        1: {cookieId: 'cookieB', column: '1', createdAt: 2, orderedAt: 12, cookieType: 'Snickerdoodle'},
+        2: {cookieId: 'cookieB', column: '2', createdAt: 1, orderedAt: 14, cookieType: 'Snickerdoodle'}
+    }
+  })
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeLessThan('orderedAt', 28)
+
+  return client.newQueryBuilder('cookie')
+    .setHashKey('cookieType', 'Oreo')
+    .setIndexName('index-cookieType-gsi')
+    .withFilter(filter)
+    .execute()
+    .then(function (data) {
+      test.equal(data.result.length, 1)
+      test.deepEqual(data.result[0], {cookieId: 'cookieA', column: '1', createdAt: 1, orderedAt: 27, cookieType: 'Oreo'})
+    })
+})
+
 builder.add(function testQueryFilterWithRangeWithIndexDoesNotThrowsError(test) {
   var filter = client.newConditionBuilder()
     .filterAttributeLessThan('createdAt', 30)
