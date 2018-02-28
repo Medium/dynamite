@@ -1,7 +1,7 @@
 {
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "homepage": "https://github.com/Medium/dynamite",
   "license": "Apache-2.0",
   "authors": [
