@@ -345,6 +345,19 @@ builder.add(function testQueryOnSecondaryIndexEquals(test) {
 
 // test querying secondary index using equals condition
 builder.add(function testQueryOnGlobalSecondaryIndexEquals(test) {
+  db.getTable('user').setGsiDefinitions([
+    {
+      hash: {
+        name: 'age',
+        type: 'S'
+      },
+      range: {
+        name: 'userId',
+        type: 'S'
+      }
+    }
+  ])
+
   db.getTable('user').setData({
     'userA': {
         1: {userId: 'userA', column: 3, age: 27},
@@ -403,6 +416,19 @@ builder.add(function testQueryOnMultipleIndexes(test) {
  * Does not currently support testing for existence of GSIs
  */
 builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
+  db.getTable('user').setGsiDefinitions([
+    {
+      hash: {
+        name: 'age',
+        type: 'S'
+      },
+      range: {
+        name: 'height',
+        type: 'N'
+      }
+    }
+  ])
+
   db.getTable('user').setHashKey('userId', 'S')
     .setData({
     'userA': {
@@ -726,6 +752,37 @@ builder.add(function testQueryFilterWithRangeKeyThrowsError(test) {
   return client.newQueryBuilder('cookie')
     .setHashKey('cookieId', 'CookieA')
     .indexGreaterThan('createdAt', 15)
+    .withFilter(filter)
+    .execute()
+    .then(function () {
+      test.fail('Expected validation exception')
+    })
+    .fail(function (e) {
+      if (!client.isValidationError(e)) throw e
+    })
+})
+
+builder.add(function testQueryFilterOnGsiIndexThrowsError(test) {
+  db.getTable('cookie').setGsiDefinitions([
+    {
+      hash: {
+        name: 'cookieType',
+        type: 'S'
+      },
+      range: {
+        name: 'orderedAt',
+        type: 'N'
+      }
+    }
+  ])
+
+  var filter = client.newConditionBuilder()
+    .filterAttributeLessThan('orderedAt', 30)
+
+  return client.newQueryBuilder('cookie')
+    .setHashKey('cookieType', 'Oreo')
+    .setIndexName('cookieType-orderedAt-gsi')
+    .indexGreaterThanEqual('orderedAt', 28)
     .withFilter(filter)
     .execute()
     .then(function () {
