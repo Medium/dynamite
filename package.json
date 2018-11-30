@@ -23,9 +23,9 @@
     "url": "https://github.com/Medium/dynamite.git"
   },
   "dependencies": {
+    "aws-sdk": "^2.368.0",
     "kew": "0.7.0",
-    "typ": "0.6.3",
-    "aws-sdk": "2.2.47"
+    "typ": "0.6.3"
   },
   "devDependencies": {
     "eslint": "2.7.0",
