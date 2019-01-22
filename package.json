@@ -29,9 +29,9 @@
   },
   "devDependencies": {
     "eslint": "2.7.0",
-    "nodeunit": "0.9.1",
-    "nodeunitq": "0.1.1",
-    "local-dynamo": "0.2.0"
+    "local-dynamo": "0.2.0",
+    "nodeunit": "0.11.3",
+    "nodeunitq": "0.1.1"
   },
   "externDependencies": {
     "aws-sdk": "./externs/aws-sdk.js"
