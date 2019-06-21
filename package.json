@@ -28,7 +28,7 @@
     "typ": "0.6.3"
   },
   "devDependencies": {
-    "eslint": "2.7.0",
+    "eslint": "4.18.2",
     "local-dynamo": "0.2.0",
     "nodeunit": "0.11.3",
     "nodeunitq": "0.1.1"
