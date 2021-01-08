@@ -447,8 +447,8 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
 
   return client.newQueryBuilder('user')
     .setHashKey('age', 28)
-    // It is important that the index name has three or more terms (sepaprated by
-    // '-'), it's a DynamoDB index namng convention, and it is how we know that it
+    // It is important that the index name has three or more terms (separated by
+    // '-'), it's a DynamoDB index naming convention, and it is how we know that it
     // is a GSI query
     .setIndexName('age-height-gsi')
     .indexGreaterThan('height', 175)
@@ -463,6 +463,48 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
       test.equal(data.result[1].height, 180, 'Height should match 180')
 
       test.equal(data.result.length, 2, '2 results should be returned')
+    })
+})
+
+// Ensure results are sorted by range key, even when there is no condition
+// on the range key
+builder.add(function testQueryOnGlobalSecondaryIndexWithoutCondition(test) {
+  db.getTable('user').setGsiDefinitions([
+    {
+      hash: {
+        name: 'userId',
+        type: 'S'
+      },
+      range: {
+        name: 'height',
+        type: 'N'
+      }
+    }
+  ])
+
+  db.getTable('user')
+    .setHashKey('userId', 'S')
+    .setData({
+    'userA': {
+        0: {userId: 'userA', column: '0', age: 26, height: 188},
+        1: {userId: 'userA', column: '1', age: 27, height: 160},
+        2: {userId: 'userA', column: '2', age: 28, height: 170},
+        3: {userId: 'userA', column: '3', age: 28, height: 180},
+        4: {userId: 'userA', column: '4', age: 29, height: 150}
+    }
+  })
+
+  return client.newQueryBuilder('user')
+    .setHashKey('userId', 'userA')
+    // It is important that the index name has three or more terms (separated by
+    // '-'), it's a DynamoDB index naming convention, and it is how we know that it
+    // is a GSI query
+    .setIndexName('userId-height-gsi')
+    .scanBackward()
+    .execute()
+    .then(function (data) {
+      var heights = data.result.map(function (r) { return r.height })
+      test.deepEqual(heights, [188, 180, 170, 160, 150])
     })
 })
 
