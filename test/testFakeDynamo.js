@@ -447,8 +447,8 @@ builder.add(function testQueryOnGlobalSecondaryIndexes(test) {
 
   return client.newQueryBuilder('user')
     .setHashKey('age', 28)
-    // It is important that the index name has three or more terms (sepaprated by
-    // '-'), it's a DynamoDB index namng convention, and it is how we know that it
+    // It is important that the index name has three or more terms (separated by
+    // '-'), it's a DynamoDB index naming convention, and it is how we know that it
     // is a GSI query
     .setIndexName('age-height-gsi')
     .indexGreaterThan('height', 175)
@@ -496,8 +496,8 @@ builder.add(function testQueryOnGlobalSecondaryIndexWithoutCondition(test) {
 
   return client.newQueryBuilder('user')
     .setHashKey('userId', 'userA')
-    // It is important that the index name has three or more terms (sepaprated by
-    // '-'), it's a DynamoDB index namng convention, and it is how we know that it
+    // It is important that the index name has three or more terms (separated by
+    // '-'), it's a DynamoDB index naming convention, and it is how we know that it
     // is a GSI query
     .setIndexName('userId-height-gsi')
     .scanBackward()
