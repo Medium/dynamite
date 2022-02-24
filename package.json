@@ -1,7 +1,7 @@
 {
   "name": "dynamite",
   "description": "promise-based DynamoDB client",
-  "version": "0.10.2",
+  "version": "1.0.0",
   "homepage": "https://github.com/Medium/dynamite",
   "license": "Apache-2.0",
   "authors": [
@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "aws-sdk": "^2.368.0",
-    "kew": "0.7.0",
+    "kew": "git+https://github.com/Medium/kew#8ff855d9cca99c287514b51e793b202a51758191",
     "typ": "0.6.3"
   },
   "devDependencies": {
     "eslint": "4.18.2",
-    "local-dynamo": "0.2.0",
+    "local-dynamo": "git+https://github.com/Medium/local-dynamo#971cc21",
     "nodeunit": "0.11.3",
     "nodeunitq": "0.1.1"
   },
