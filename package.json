@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "aws-sdk": "^2.368.0",
-    "kew": "git+https://github.com/Medium/kew#3b0a2d7",
+    "kew": "git+https://github.com/Medium/kew#a9a2ef0",
     "typ": "0.6.3"
   },
   "devDependencies": {
     "eslint": "4.18.2",
-    "local-dynamo": "git+https://github.com/Medium/local-dynamo#cf187d7",
+    "local-dynamo": "git+https://github.com/Medium/local-dynamo#1872246",
     "nodeunit": "0.11.3",
     "nodeunitq": "0.1.1"
   },
